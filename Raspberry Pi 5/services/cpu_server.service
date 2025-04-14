@@ -1,0 +1,11 @@
+[Unit]
+Description=CPU Activity Server
+After=network.target
+
+[Service]
+User=nas
+WorkingDirectory=/home/nas/services/
+ExecStart=/usr/bin/python /home/nas/services/cpu_server.py
+
+[Install]
+WantedBy=multi-user.target

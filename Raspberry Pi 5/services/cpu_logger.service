@@ -1,0 +1,11 @@
+[Unit]
+Description=CPU Activity Logging
+After=network.target
+
+[Service]
+User=nas
+WorkingDirectory=/home/nas/services/
+ExecStart=/usr/bin/python /home/nas/services/cpu_logger.py
+
+[Install]
+WantedBy=multi-user.target
