@@ -52,7 +52,7 @@ This project is designed for a 3D-printed NAS case that houses:
 
    ```bash
    cd "Raspberry Pi 5"
-   pip3 install psutil flask flask-cors python-dotenv
+   pip3 install -r requirements.txt
    sudo cp services/nas_service.service /etc/systemd/system/
    sudo systemctl enable nas_service
    sudo systemctl start nas_service
