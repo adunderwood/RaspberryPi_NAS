@@ -26,6 +26,11 @@ python3 -m venv ~/.virtualenvs/pimoroni
 source ~/.virtualenvs/pimoroni/bin/activate
 
 # Install required packages
+pip install -r requirements.txt
+```
+
+Or install manually:
+```bash
 pip install inky pillow requests python-dotenv sparklines font-fredoka-one
 ```
 
@@ -40,11 +45,11 @@ cp .env.example .env
 Edit `.env` with your configuration:
 
 ```bash
-# API Endpoints
-NAS_URL=http://nas.local:5001
-TEMPERATURE_URL=http://nas.local:5000
-CPU_URL=http://nas.local:5002
-CPU_TEMP_URL=http://nas.local:5003
+# API Endpoints (Unified NAS Service on port 5000)
+NAS_URL=http://nas.local:5000/raid
+TEMPERATURE_URL=http://nas.local:5000/temperature
+CPU_URL=http://nas.local:5000/cpu
+CPU_TEMP_URL=http://nas.local:5000/cpu_temp
 
 # Display Settings
 MESSAGE=Bunny NAS
@@ -83,7 +88,9 @@ Add this line:
 
 ## API Endpoints
 
-The script expects JSON responses from the following endpoints:
+The script expects JSON responses from the following endpoints.
+
+**Note**: As of the unified NAS service, all endpoints are served from a single service on port 5000. See `../Raspberry Pi 5/README.md` for the unified service documentation.
 
 ### Disk Info (`NAS_URL`)
 ```json
