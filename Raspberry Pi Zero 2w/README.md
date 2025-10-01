@@ -34,7 +34,45 @@ Or install manually:
 pip install inky pillow requests python-dotenv sparklines font-fredoka-one
 ```
 
-### 2. Configure Environment Variables
+### 2. Install Fonts
+
+The display script requires specific fonts in `~/fonts/`:
+
+```bash
+mkdir -p ~/fonts/{roboto,noto,sf_mono}
+cd /tmp
+```
+
+**Roboto Fonts:**
+```bash
+# Download from Google Fonts repository
+wget https://github.com/google/fonts/raw/main/apache/roboto/static/Roboto-Black.ttf
+wget https://github.com/google/fonts/raw/main/apache/roboto/static/Roboto-ExtraBold.ttf
+wget https://github.com/google/fonts/raw/main/apache/roboto/static/Roboto-Medium.ttf
+mv Roboto-*.ttf ~/fonts/roboto/
+```
+
+**Noto Emoji Font (for temperature icon 🌡️):**
+```bash
+wget https://github.com/googlefonts/noto-emoji/raw/main/fonts/NotoEmoji-Medium.ttf
+mv NotoEmoji-Medium.ttf ~/fonts/noto/
+```
+
+**SF Mono Font (for CPU sparkline):**
+
+If you have access to macOS/Xcode, copy `SFMonoRegular.otf` from:
+`/Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework/Versions/A/Resources/Fonts/`
+
+Or download an alternative monospace font that works as a substitute.
+
+**Verify installation:**
+```bash
+ls -la ~/fonts/roboto/
+ls -la ~/fonts/noto/
+ls -la ~/fonts/sf_mono/
+```
+
+### 3. Configure Environment Variables
 
 Copy the example `.env` file and configure your settings:
 
@@ -61,7 +99,7 @@ WARN_TEMP=90              # Temperature warning threshold (°F)
 FONT_DIR=/home/nas/fonts
 ```
 
-### 3. Set Up Automatic Updates
+### 4. Set Up Automatic Updates
 
 The `display.sh` script handles virtualenv activation and script execution:
 
