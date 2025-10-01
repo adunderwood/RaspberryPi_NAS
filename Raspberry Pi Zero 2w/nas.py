@@ -1,12 +1,8 @@
-import numpy as np
-
 import os
 import requests
 import json
-import emoji
 
 from sparklines import sparklines
-from io import StringIO
 
 from inky import InkyPHAT
 from inky.auto import auto
@@ -20,7 +16,7 @@ load_dotenv()
 # Setup
 inky_display = auto()
 
-# Load Enviornment Variables
+# Load Environment Variables
 
 MESSAGE = os.environ.get("MESSAGE", "Bunny NAS")
 
@@ -33,131 +29,130 @@ THEME = THEME.lower()
 NAS_URL = os.environ.get("NAS_URL")
 TEMPERATURE_URL = os.environ.get("TEMPERATURE_URL")
 CPU_URL = os.environ.get("CPU_URL")
+CPU_TEMP_URL = os.environ.get("CPU_TEMP_URL")
+
+FONT_DIR = os.environ.get("FONT_DIR", "/home/nas/fonts")
 
 # Fonts
-roboto_black = "/home/nas/fonts/roboto/Roboto-Black.ttf"  # Replace with the actual path to your font file
+roboto_black = os.path.join(FONT_DIR, "roboto/Roboto-Black.ttf")
 roboto_black_ttf = ImageFont.truetype(roboto_black, 56)
 
-roboto_bold = "/home/nas/fonts/roboto/Roboto-ExtraBold.ttf"
+roboto_bold = os.path.join(FONT_DIR, "roboto/Roboto-ExtraBold.ttf")
 roboto_bold_ttf = ImageFont.truetype(roboto_bold, 16)
 
-roboto_med = "/home/nas/fonts/roboto/Roboto-Medium.ttf"  # Replace with the actual path to your font file
+roboto_med = os.path.join(FONT_DIR, "roboto/Roboto-Medium.ttf")
 roboto_med_ttf = ImageFont.truetype(roboto_med, 16)
 
-roboto_small = "/home/nas/fonts/roboto/Roboto-ExtraBold.ttf"  # Replace with the actual path to your font file
+roboto_small = os.path.join(FONT_DIR, "roboto/Roboto-ExtraBold.ttf")
 roboto_small_ttf = ImageFont.truetype(roboto_small, 14)
 
-roboto_bold_right = "/home/nas/fonts/roboto/Roboto-ExtraBold.ttf"  # Replace with the actual path to your font file
+roboto_bold_right = os.path.join(FONT_DIR, "roboto/Roboto-ExtraBold.ttf")
 roboto_bold_right_ttf = ImageFont.truetype(roboto_bold_right, 17)
 
-roboto_med_right = "/home/nas/fonts/roboto/Roboto-Medium.ttf"  # Replace with the actual path to your font file
+roboto_med_right = os.path.join(FONT_DIR, "roboto/Roboto-Medium.ttf")
 roboto_med_right_ttf = ImageFont.truetype(roboto_med, 17)
 
-noto = "/home/nas/fonts/noto/NotoEmoji-Medium.ttf"
+noto = os.path.join(FONT_DIR, "noto/NotoEmoji-Medium.ttf")
 noto_ttf = ImageFont.truetype(noto, 16)
 temperature_icon = u"\U0001F321"
 
-sf_mono = "/home/nas/fonts/sf_mono/SFMonoRegular.otf"
+sf_mono = os.path.join(FONT_DIR, "sf_mono/SFMonoRegular.otf")
 sf_mono_ttf = ImageFont.truetype(sf_mono, 16)
 
-def getCPUInfo(url = CPU_URL):
-    cpu_data = []
-
+def fetch_json(url):
+    """Helper function to fetch JSON from a URL with error handling."""
     try:
         response = requests.get(url)
-        response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
-
-        data = response.json()
-        cpu_data = data["cpu"]
-
+        response.raise_for_status()
+        return response.json()
     except requests.exceptions.RequestException as e:
         print(f"Request error: {e}")
+        return None
     except json.JSONDecodeError:
         print("Invalid JSON response")
+        return None
 
+def getCPUInfo(url=CPU_URL):
+    cpu_data = []
+    data = fetch_json(url)
+    if data:
+        cpu_data = data.get("cpu", [])
     return cpu_data
 
 # NAS Info
-def getDiskInfo(url = NAS_URL):
-    #print(url)
-    #response = requests.get(url)
-
+def getDiskInfo(url=NAS_URL):
     total = -1
     free = -1
     used = -1
-    percent = -1
+    percent = "-1"
 
-    try:
-        response = requests.get(url)
-        response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
+    data = fetch_json(url)
+    if data:
+        total = data.get("total", -1)
+        used = data.get("used", -1)
+        free = data.get("free", -1)
+        percent = data.get("percent", "-1")
 
-        data = response.json()
-        total = data["total"]
-        used = data["used"]
-        free = data["free"]
-        percent = data["percent"]
-
-        output = f"Total: {total}\nUsed: {used}\nFree: {free}\nPercent: {percent}"
-        #print(output)
-
-    except requests.exceptions.RequestException as e:
-        print(f"Request error: {e}")
-    except json.JSONDecodeError:
-        print("Invalid JSON response")
-
-    ret = {
+    return {
         "total": total,
         "used": used,
         "free": free,
         "percent": percent
     }
 
-    return ret
-
 # Get Temperature
 
-def thermInfo(url = TEMPERATURE_URL):
-    #therm_url = "http://nas.local:5000"
-    temperature = -1
-    #response = requests.get(url)
+def cpuThermInfo(url=CPU_TEMP_URL):
+    celsius = "-1"
+    fahrenheit = "-1"
+
+    data = fetch_json(url)
+    if data and "cpu_temp" in data:
+        temperature = data["cpu_temp"]
+
+        # average all data points
+        total = sum(int(round(i, 0)) for i in temperature)
+        average_temp = total / len(temperature)
+
+        # temperature comes in degrees C
+        temp_C = average_temp
+        temp_F = int(round((average_temp * 9/5) + 32, 0))
+
+        degree_sign = u'\N{DEGREE SIGN}'
+
+        celsius = str(temp_C) + degree_sign + " C"
+        fahrenheit = str(temp_F) + degree_sign + " F"
+
+    return {
+        "celsius": celsius,
+        "fahrenheit": fahrenheit
+    }
+
+def thermInfo(url=TEMPERATURE_URL):
+    temperature = "-1"
     therm_alarm = False
 
-    try:
-        response = requests.get(url)
-        response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
-
-        data = response.json()
-
+    data = fetch_json(url)
+    if data and "temperature" in data:
         temperature = data["temperature"]
-        temp_int = temperature.replace(" F","").replace(" C","")
-        #print(temp_int)
+        temp_int = temperature.replace(" F", "").replace(" C", "")
         temp_int = float(temp_int)
 
         degree_sign = u'\N{DEGREE SIGN}'
 
-        temperature = temperature.replace (" F", degree_sign + " F")
-        temperature = temperature.replace (" C", degree_sign + " C")
+        temperature = temperature.replace(" F", degree_sign + " F")
+        temperature = temperature.replace(" C", degree_sign + " C")
 
         # temperature
-        if (temp_int >= WARN_TEMP):
+        if temp_int >= WARN_TEMP:
             therm_alarm = True
-            #THEME = "red"
-            
-        #print("Temperature: " + temperature)
 
-    except requests.exceptions.RequestException as e:
-        print(f"Request error: {e}")
-    except json.JSONDecodeError:
-        print("Invalid JSON response")
-
-    ret = {
+    return {
         "temperature": temperature,
         "therm_alarm": therm_alarm
     }
 
-    return ret
-
-def getTheme(which = THEME):
+def getTheme(which=THEME):
     # Theme Colors
     which = which.lower()
 
@@ -165,16 +160,19 @@ def getTheme(which = THEME):
         foreground_color = inky_display.BLACK
         background_color = inky_display.WHITE
         accent_color = inky_display.RED
-
-    if which == "dark":
+    elif which == "dark":
         foreground_color = inky_display.WHITE
         background_color = inky_display.BLACK
         accent_color = inky_display.RED
-
-    if which == "red":
+    elif which == "red":
         foreground_color = inky_display.WHITE
         background_color = inky_display.RED
         accent_color = inky_display.WHITE
+    else:
+        # Default to light theme
+        foreground_color = inky_display.BLACK
+        background_color = inky_display.WHITE
+        accent_color = inky_display.RED
 
     ret = {
         "foreground": foreground_color,
@@ -184,7 +182,7 @@ def getTheme(which = THEME):
 
     return ret
 
-def render(disk_info, therm_info):
+def render(disk_info, therm_info, cpu_therm_info):
     theme = getTheme()
 
     # Percent is a featured element and affected by changes below
@@ -204,16 +202,17 @@ def render(disk_info, therm_info):
     line_height = 16 * .6
 
     # Warning, change theme
-    percent_calc = int(percent.replace("%",""))
-    #adjustments
-    if (percent_calc < 20):
+    percent_calc = int(percent.replace("%", ""))
+
+    # adjustments
+    if percent_calc < 20:
         left_offset = -10
-        
+
     # disk use
-    if (percent_calc >= WARN_PERCENT):
+    if percent_calc >= WARN_PERCENT:
+        theme = getTheme("red")
         percent_color = theme["accent"]
-        THEME = "red"
-        
+
     # Create a new image
     img = Image.new("P", (inky_display.width, inky_display.height), theme["background"])
     draw = ImageDraw.Draw(img)
@@ -222,24 +221,33 @@ def render(disk_info, therm_info):
     font_large = ImageFont.truetype(FredokaOne, 48)
     font = ImageFont.truetype(FredokaOne, 16)
 
-    # Left Column 
+    # Left Column
 
     # Draw Percent
     draw.multiline_text((left_x - 5, top_y), text_left, font=roboto_black_ttf, fill=percent_color)
 
     # Draw Percent Label
-    draw.text((left_x, top_y + 62), "% Full", theme["foreground"], roboto_med_ttf)
+    #draw.text((left_x, top_y + 62), "% Full", theme["foreground"], roboto_med_ttf)
+
+    # Draw CPU Temperature
+    cpu_temperature = cpu_therm_info["fahrenheit"]
+    draw.text((left_x, top_y + 60), cpu_temperature, theme["foreground"], roboto_bold_ttf)
 
     # Draw Temperature
     therm_color = theme["foreground"]
     if therm_info["therm_alarm"]:
         therm_color = theme["accent"] # change color for alarm
 
-    draw.text((left_x + 46, top_y + 60), temperature_icon, therm_color, noto_ttf)
-    draw.text((left_x + 62, top_y + 60), therm_info["temperature"], therm_color, roboto_bold_ttf)
+    if therm_info["temperature"]:
+        therm_temperature = therm_info["temperature"]
+    else:
+        therm_temperature = "-1"
+
+    draw.text((left_x + 50, top_y + 60), temperature_icon, therm_color, noto_ttf)
+    draw.text((left_x + 66, top_y + 60), therm_temperature, therm_color, roboto_bold_ttf)
 
     # Right Column
-    
+
     right_x = image_width // 2 + column_spacing // 2
     right_x = right_x + 5
 
@@ -249,17 +257,6 @@ def render(disk_info, therm_info):
     draw.multiline_text((right_x, top_y + 8), text_rightA, font=roboto_med_right_ttf, fill=theme["foreground"], spacing=line_height)
     draw.multiline_text((right_x + 50, top_y + 8), text_rightB, font=roboto_bold_right_ttf, fill=theme["foreground"], spacing=line_height)
 
-    #draw footer
-    #rectangle_coords = (0, inky_display.height - 30, inky_display.width, inky_display.height)
-    #draw.rectangle(rectangle_coords, outline=theme["foreground"], fill=theme["foreground"])
-
-    #_, _, w, h = font.getbbox(MESSAGE)
-    #center = (inky_display.width / 2) - (w / 2)
-
-    #draw.text((center, inky_display.height - 26), MESSAGE, theme["background"], roboto_bold_right_ttf)
-
-    #data = [3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 10, 3, 1, 1, 4, 8] #17...
-    #data = [0.0, 33.2, 0.0, 11.8, 0.0, 0.0, 0.0, 0.0, 0.2, 0.0, 13.2, 0.0, 0.0, 9.1, 50.1, 10.2, 2.1]
     data = getCPUInfo()
     sparkline = ''.join(sparklines(data))
 
@@ -274,5 +271,6 @@ def render(disk_info, therm_info):
 if __name__ == '__main__':
     disk_info = getDiskInfo()
     therm_info = thermInfo()
+    cpu_therm_info = cpuThermInfo()
 
-    render(disk_info, therm_info)
+    render(disk_info, therm_info, cpu_therm_info)
