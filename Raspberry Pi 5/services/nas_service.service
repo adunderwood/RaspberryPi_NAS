@@ -7,7 +7,7 @@ Type=simple
 User=nas
 WorkingDirectory=/home/nas/services/
 EnvironmentFile=/home/nas/services/.env
-ExecStart=/usr/bin/python3 /home/nas/services/nas_service.py
+ExecStart=/usr/bin/python /home/nas/services/nas_service.py
 Restart=on-failure
 RestartSec=10
 
