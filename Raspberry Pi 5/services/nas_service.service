@@ -1,0 +1,20 @@
+[Unit]
+Description=Unified NAS Monitoring Service
+After=network.target
+
+[Service]
+Type=simple
+User=nas
+WorkingDirectory=/home/nas/services/
+EnvironmentFile=/home/nas/services/.env
+ExecStart=/usr/bin/python3 /home/nas/services/nas_service.py
+Restart=on-failure
+RestartSec=10
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=nas-service
+
+[Install]
+WantedBy=multi-user.target
