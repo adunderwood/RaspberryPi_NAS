@@ -1,0 +1,11 @@
+[Unit]
+Description=Temperature Sensor Server
+After=network.target
+
+[Service]
+User=nas
+WorkingDirectory=/home/nas/therm/
+ExecStart=/usr/bin/python /home/nas/therm/therm_server.py
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,11 @@
+[Unit]
+Description=CPU Temperature Logging
+After=network.target
+
+[Service]
+User=nas
+WorkingDirectory=/home/nas/services/
+ExecStart=/usr/bin/python /home/nas/services/cpu_temp_logger.py
+
+[Install]
+WantedBy=multi-user.target
