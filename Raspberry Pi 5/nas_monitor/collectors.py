@@ -27,8 +27,13 @@ def collect_ambient_temperature(sensor_path: Path) -> float:
 
 def collect_storage() -> list[dict[str, Any]]:
     arrays = []
+    seen_devices: set[str] = set()
     for partition in psutil.disk_partitions(all=False):
-        if partition.device.startswith("/dev/md"):
+        # OpenMediaVault exposes shared folders as bind mounts. psutil reports
+        # each bind mount as another partition backed by the same md device, but
+        # the API models arrays rather than mount aliases.
+        if partition.device.startswith("/dev/md") and partition.device not in seen_devices:
+            seen_devices.add(partition.device)
             usage = shutil.disk_usage(partition.mountpoint)
             arrays.append({"device": partition.device, "mount": partition.mountpoint,
                            "bytes_total": usage.total, "bytes_used": usage.used, "bytes_free": usage.free,
