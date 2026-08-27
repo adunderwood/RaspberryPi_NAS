@@ -25,8 +25,8 @@ sudo ./install/pi5/install-pi5.sh
 
 The installer is also the upgrader. It preserves `/etc/nas-monitor/config.toml`
 and `/var/lib/nas-monitor/metrics.sqlite3`, replaces application-owned files,
-updates the virtual environment, restarts the service, and performs a health
-check.
+updates the virtual environment, explicitly restarts an already-running service,
+and performs a health check.
 
 ## Verification
 

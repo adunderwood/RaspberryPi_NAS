@@ -46,7 +46,11 @@ systemctl daemon-reload
 for legacy_service in nas_service cpu_logger cpu_server cpu_temp_logger cpu_temp_server raid_server therm_logger therm_server; do
   systemctl disable --now "$legacy_service.service" 2>/dev/null || true
 done
-systemctl enable --now nas-monitor.service
+systemctl enable nas-monitor.service
+# `enable --now` starts an inactive service but does not restart one that is
+# already running. An upgrade must explicitly restart so the process loads the
+# newly installed Python files.
+systemctl restart nas-monitor.service
 
 attempt=0
 while [ "$attempt" -lt 15 ]; do
