@@ -74,7 +74,7 @@
       <section class="preview-section" aria-label="Display preview">
         <div class="preview-heading">
           <div><p class="eyebrow">LIVE PREVIEW</p><h3>InkyPHAT screen</h3></div>
-          <label>Preview screen<select id="preview-screen"><option value="overview">Overview</option><option value="storage">Storage</option><option value="thermal">Thermal</option></select></label>
+          <label>Preview screen<select id="preview-screen"><option value="overview">Overview</option><option value="storage">Storage</option><option value="thermal">Thermal</option><option value="drive_health">Drive health</option></select></label>
         </div>
         <div class="inky-preview"><canvas id="display-preview" width="500" height="244" role="img" aria-label="Approximate eInk display preview"></canvas></div>
         <p class="preview-note">Approximate layout and three-colour rendering. Exact fonts and spacing depend on the detected panel.</p>
@@ -89,7 +89,7 @@
       <div class="form-grid">
         <label>Temperature unit<select id="temperature-unit"><option value="F">Fahrenheit</option><option value="C">Celsius</option></select></label>
         <label>Screen mode<select id="screen-mode"><option value="fixed">Fixed screen</option><option value="rotate">Rotate screens</option></select></label>
-        <label>Fixed screen<select id="fixed-screen"><option value="overview">Overview</option><option value="storage">Storage</option><option value="thermal">Thermal</option></select></label>
+        <label>Fixed screen<select id="fixed-screen"><option value="overview">Overview</option><option value="storage">Storage</option><option value="thermal">Thermal</option><option value="drive_health">Drive health</option></select></label>
         <label>Refresh interval<input id="refresh-interval" type="number" min="60" step="30"><span>seconds</span></label>
         <label>Rotation interval<input id="rotation-interval" type="number" min="60" step="30"><span>seconds</span></label>
       </div>
@@ -97,6 +97,7 @@
         <label class="check"><input type="checkbox" name="screen" value="overview">Overview</label>
         <label class="check"><input type="checkbox" name="screen" value="storage">Storage</label>
         <label class="check"><input type="checkbox" name="screen" value="thermal">Thermal</label>
+        <label class="check"><input type="checkbox" name="screen" value="drive_health">Drive health</label>
       </fieldset>
       <fieldset><legend>Warning thresholds</legend><div class="form-grid thresholds">
         <label>Storage<input id="storage-threshold" type="number" min="1" max="100"><span>%</span></label>

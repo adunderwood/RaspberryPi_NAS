@@ -1,5 +1,5 @@
 from collections import namedtuple
-from nas_monitor.collectors import collect_ambient_temperature, collect_storage, find_ambient_sensor
+from nas_monitor.collectors import collect_ambient_temperature, collect_md_members, collect_storage, find_ambient_sensor
 from nas_monitor.config import SensorConfig
 
 def test_finds_and_reads_ds18b20_sensor(tmp_path):
@@ -27,6 +27,7 @@ def test_storage_deduplicates_openmediavault_bind_mounts(monkeypatch):
     Usage = namedtuple("Usage", "total used free")
     monkeypatch.setattr("nas_monitor.collectors.psutil.disk_partitions", lambda all=False: partitions)
     monkeypatch.setattr("nas_monitor.collectors.shutil.disk_usage", lambda path: Usage(1000, 400, 600))
+    monkeypatch.setattr("nas_monitor.collectors.collect_md_members", lambda device: ([], 0))
 
     assert collect_storage() == [{
         "device": "/dev/md0",
@@ -35,4 +36,19 @@ def test_storage_deduplicates_openmediavault_bind_mounts(monkeypatch):
         "bytes_used": 400,
         "bytes_free": 600,
         "usage_percent": 40.0,
+        "degraded_drives": 0,
+        "drives": [],
     }]
+
+def test_collects_linux_md_member_health(tmp_path):
+    md = tmp_path / "md0" / "md"
+    member = md / "dev-sda"
+    member.mkdir(parents=True)
+    (md / "degraded").write_text("0\n")
+    (member / "state").write_text("in_sync\n")
+    (member / "errors").write_text("0\n")
+
+    drives, degraded = collect_md_members("/dev/md0", tmp_path)
+
+    assert degraded == 0
+    assert drives == [{"device":"/dev/sda", "state":"in_sync", "errors":0, "healthy":True}]

@@ -33,9 +33,12 @@ def is_alert(snapshot: dict[str, Any], policy: dict[str, Any]) -> bool:
     thresholds = policy.get("thresholds", {})
     arrays = snapshot.get("storage", {}).get("arrays", [])
     storage_alert = any(float(item.get("usage_percent", 0)) >= float(thresholds.get("storage_percent", 90)) for item in arrays)
+    drive_alert = any(int(item.get("degraded_drives", 0) or 0) > 0 or
+                      any(not drive.get("healthy", False) for drive in item.get("drives", []))
+                      for item in arrays)
     cpu_temp = snapshot.get("cpu", {}).get("temperature_c")
     ambient = snapshot.get("ambient", {}).get("temperature_c")
-    return (storage_alert or
+    return (storage_alert or drive_alert or
             (cpu_temp is not None and cpu_temp >= float(thresholds.get("cpu_temperature_c", 80))) or
             (ambient is not None and ambient >= float(thresholds.get("ambient_temperature_c", 35))))
 

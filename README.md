@@ -157,6 +157,12 @@ The versioned API and dashboard also provide:
 | `/api/v1/display/policy` | Persistent eInk display preferences |
 | `/api/v1/health` | Service health check |
 
+For Linux MD arrays, each snapshot also reports the member devices, their MD
+state and error count, and whether the array is degraded. The Drive Health eInk
+screen can be selected as a fixed screen or included in the rotation. This is
+Linux MD health data rather than SMART telemetry, so it requires no privileged
+raw-disk access.
+
 The service listens on `0.0.0.0:5000`, so it can also be accessed through the Pi 5's normal LAN address when desired.
 
 To verify the service on the Pi 5:

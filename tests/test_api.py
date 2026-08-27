@@ -10,7 +10,10 @@ def client(tmp_path):
     store.record("cpu.temperature_c", 50, "celsius", "2026-01-01T00:00:01Z")
     store.record("ambient.temperature_c", 20, "celsius", "2026-01-01T00:00:02Z")
     array = {"device":"/dev/md0", "mount":"/mnt/nas", "bytes_total":10737418240,
-             "bytes_used":5368709120, "bytes_free":5368709120, "usage_percent":50.0}
+             "bytes_used":5368709120, "bytes_free":5368709120, "usage_percent":50.0,
+             "degraded_drives":0, "drives":[
+                 {"device":"/dev/sda", "state":"in_sync", "errors":0, "healthy":True},
+                 {"device":"/dev/sdb", "state":"in_sync", "errors":0, "healthy":True}]}
     app = create_app(AppConfig(), store, lambda: [array])
     app.testing = True
     with app.test_client() as test_client:
@@ -29,6 +32,7 @@ def test_dashboard_and_assets_are_served(client):
     assert b"System monitor" in response.data
     assert b"Approximate eInk display preview" in response.data
     assert b"Display theme" in response.data
+    assert b"Drive health" in response.data
     assert b'id="cpu-temp-unit"' in response.data
     assert b'id="ambient-temp-unit"' in response.data
     assert client.get("/static/dashboard.css").status_code == 200
@@ -50,6 +54,7 @@ def test_policy_validation_and_revision(client):
     policy = client.get("/api/v1/display/policy").json
     revision = policy["revision"]
     policy["theme"] = "dark"
+    policy["fixed_screen"] = "drive_health"
     response = client.put("/api/v1/display/policy", json=policy)
     assert response.status_code == 200
     assert response.json["revision"] == revision + 1

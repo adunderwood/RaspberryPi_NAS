@@ -11,7 +11,9 @@ http://nas.local:5000/
 The dashboard displays live CPU, thermal, and storage metrics. Its Display
 Settings panel manages the policy consumed by the Pi Zero 2W, including theme,
 temperature unit, fixed or rotating screens, refresh timing, and alert
-thresholds. Live updates use `/api/v1/events`; no frontend build step is needed.
+thresholds. Available screens include overview, storage, thermal, and individual
+Linux MD member-drive health. Live updates use `/api/v1/events`; no frontend
+build step is needed.
 
 ## Features
 

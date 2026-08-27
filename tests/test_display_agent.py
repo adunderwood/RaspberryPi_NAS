@@ -1,5 +1,5 @@
 from PIL import Image
-from nas_display.agent import DisplayAgent, image_hash, selected_screen
+from nas_display.agent import DisplayAgent, image_hash, is_alert, selected_screen
 from nas_display.client import ApiError
 from nas_display.state import StateStore
 
@@ -38,6 +38,12 @@ def test_rotation_is_deterministic():
               "screens":[{"type":"overview"},{"type":"thermal"}]}
     assert selected_screen(policy, 0)["type"] == "overview"
     assert selected_screen(policy, 60)["type"] == "thermal"
+
+def test_degraded_drive_triggers_alert_refresh():
+    snapshot = {**SNAPSHOT, "storage":{"arrays":[{
+        "usage_percent":40, "degraded_drives":1,
+        "drives":[{"device":"/dev/sda", "state":"faulty", "healthy":False}]}]}}
+    assert is_alert(snapshot, POLICY) is True
 
 def test_agent_suppresses_unneeded_and_repeated_offline_refreshes(tmp_path):
     now = [1000.0]; client, hardware = FakeClient(), FakeHardware()
