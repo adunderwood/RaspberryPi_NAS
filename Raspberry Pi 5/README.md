@@ -2,6 +2,17 @@
 
 A unified monitoring service that collects and serves NAS system metrics via Flask API endpoints. This single service replaces 7+ separate scripts and services.
 
+The service includes a responsive management dashboard at:
+
+```text
+http://nas.local:5000/
+```
+
+The dashboard displays live CPU, thermal, and storage metrics. Its Display
+Settings panel manages the policy consumed by the Pi Zero 2W, including theme,
+temperature unit, fixed or rotating screens, refresh timing, and alert
+thresholds. Live updates use `/api/v1/events`; no frontend build step is needed.
+
 ## Features
 
 - **Unified Service**: One process replaces multiple separate logger/server pairs

@@ -39,6 +39,8 @@ internet access.
 - **Automatic Log Rotation** - Maintains the last 2000 readings and prevents unbounded log growth
 - **Robust Error Handling** - Gracefully handles sensor failures and corrupted data
 - **Persistent Storage** - Survives reboots while keeping disk usage minimal
+- **Live Web Dashboard** - Responsive current metrics and CPU history at port `5000`
+- **Display Management** - Theme, screen rotation, refresh intervals, units, and warning thresholds
 
 ### Display (Pi Zero 2W)
 
@@ -144,6 +146,16 @@ The display accesses it over the dedicated USB interface:
 | `http://10.99.0.1:5000/cpu_temp` | CPU temperature in °C (last 18 readings) | `{"cpu_temp": [45.2, 46.1, ...]}` |
 | `http://10.99.0.1:5000/temperature` | Ambient temperature | `{"temperature": "72 F"}` |
 | `http://10.99.0.1:5000/raid` | RAID disk usage | `{"total": "5.4T", "used": "2.7T", ...}` |
+
+The versioned API and dashboard also provide:
+
+| Path | Description |
+|------|-------------|
+| `/` | Live management dashboard |
+| `/api/v1/snapshot` | Typed current metrics and recent history |
+| `/api/v1/events` | Server-Sent Events stream for live dashboard updates |
+| `/api/v1/display/policy` | Persistent eInk display preferences |
+| `/api/v1/health` | Service health check |
 
 The service listens on `0.0.0.0:5000`, so it can also be accessed through the Pi 5's normal LAN address when desired.
 

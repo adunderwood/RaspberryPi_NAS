@@ -23,6 +23,21 @@ def test_versioned_snapshot_is_typed(client):
     assert response.json["cpu"]["usage_percent"] == 25
     assert response.json["storage"]["arrays"][0]["bytes_total"] == 10737418240
 
+def test_dashboard_and_assets_are_served(client):
+    response = client.get("/")
+    assert response.status_code == 200
+    assert b"System monitor" in response.data
+    assert client.get("/static/dashboard.css").status_code == 200
+    assert client.get("/static/dashboard.js").status_code == 200
+
+def test_event_stream_emits_typed_snapshot(client):
+    response = client.get("/api/v1/events", buffered=False)
+    first_event = next(response.response).decode()
+    response.close()
+    assert first_event.startswith("event: snapshot\ndata: ")
+    assert '"schema_version":1' in first_event
+    assert response.headers["Cache-Control"] == "no-cache"
+
 def test_legacy_routes_remain_available(client):
     assert client.get("/cpu").json == {"cpu": [25.0]}
     assert client.get("/temperature").json == {"temperature": "68 F"}
@@ -35,3 +50,5 @@ def test_policy_validation_and_revision(client):
     assert response.status_code == 200
     assert response.json["revision"] == revision + 1
     assert client.put("/api/v1/display/policy", json={"mode":"broken"}).status_code == 400
+    policy["screens"] = [{"type":"not-installed"}]
+    assert client.put("/api/v1/display/policy", json=policy).status_code == 400

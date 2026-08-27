@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NAS Monitor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+  <script src="{{ url_for('static', filename='dashboard.js') }}" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">BUNNY NAS</p>
+      <h1>System monitor</h1>
+    </div>
+    <div class="topbar-actions">
+      <span id="connection" class="status status-waiting"><i></i>Connecting</span>
+      <button id="settings-open" class="button button-secondary" type="button">Display settings</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero-grid" aria-label="Current system metrics">
+      <article class="metric metric-featured">
+        <p class="metric-label">Storage used</p>
+        <div class="metric-value"><span id="storage-percent">--</span><small>%</small></div>
+        <div class="capacity-bar"><span id="capacity-fill"></span></div>
+        <div class="metric-detail"><span id="storage-used">--</span> of <span id="storage-total">--</span></div>
+      </article>
+      <article class="metric">
+        <p class="metric-label">CPU load</p>
+        <div class="metric-value"><span id="cpu-percent">--</span><small>%</small></div>
+        <p class="metric-detail" id="cpu-caption">Waiting for samples</p>
+      </article>
+      <article class="metric">
+        <p class="metric-label">CPU temperature</p>
+        <div class="metric-value"><span id="cpu-temp">--</span><small>°C</small></div>
+        <p class="metric-detail">Processor thermal zone</p>
+      </article>
+      <article class="metric">
+        <p class="metric-label">Case temperature</p>
+        <div class="metric-value"><span id="ambient-temp">--</span><small>°C</small></div>
+        <p class="metric-detail">DS18B20 probe</p>
+      </article>
+    </section>
+
+    <section class="content-grid">
+      <article class="panel chart-panel">
+        <div class="panel-heading">
+          <div><p class="eyebrow">LIVE HISTORY</p><h2>CPU activity</h2></div>
+          <span id="last-updated" class="muted">Waiting for data</span>
+        </div>
+        <canvas id="cpu-chart" role="img" aria-label="Recent CPU usage chart"></canvas>
+      </article>
+      <article class="panel storage-panel">
+        <div class="panel-heading"><div><p class="eyebrow">ARRAY</p><h2>Storage</h2></div></div>
+        <dl>
+          <div><dt>Device</dt><dd id="storage-device">--</dd></div>
+          <div><dt>Mount</dt><dd id="storage-mount">--</dd></div>
+          <div><dt>Free</dt><dd id="storage-free">--</dd></div>
+          <div><dt>Status</dt><dd><span class="health-dot"></span>Online</dd></div>
+        </dl>
+      </article>
+    </section>
+  </main>
+
+  <dialog id="settings-dialog">
+    <form id="settings-form">
+      <div class="dialog-heading">
+        <div><p class="eyebrow">INKYPHAT</p><h2>Display settings</h2></div>
+        <button id="settings-close" class="icon-button" type="button" aria-label="Close">×</button>
+      </div>
+      <div id="settings-message" class="form-message" hidden></div>
+      <div class="form-grid">
+        <label>Theme<select id="theme"><option value="light">Light</option><option value="dark">Dark</option><option value="red">Red</option></select></label>
+        <label>Temperature unit<select id="temperature-unit"><option value="F">Fahrenheit</option><option value="C">Celsius</option></select></label>
+        <label>Screen mode<select id="screen-mode"><option value="fixed">Fixed screen</option><option value="rotate">Rotate screens</option></select></label>
+        <label>Fixed screen<select id="fixed-screen"><option value="overview">Overview</option><option value="storage">Storage</option><option value="thermal">Thermal</option></select></label>
+        <label>Refresh interval<input id="refresh-interval" type="number" min="60" step="30"><span>seconds</span></label>
+        <label>Rotation interval<input id="rotation-interval" type="number" min="60" step="30"><span>seconds</span></label>
+      </div>
+      <fieldset><legend>Rotating screens</legend>
+        <label class="check"><input type="checkbox" name="screen" value="overview">Overview</label>
+        <label class="check"><input type="checkbox" name="screen" value="storage">Storage</label>
+        <label class="check"><input type="checkbox" name="screen" value="thermal">Thermal</label>
+      </fieldset>
+      <fieldset><legend>Warning thresholds</legend><div class="form-grid thresholds">
+        <label>Storage<input id="storage-threshold" type="number" min="1" max="100"><span>%</span></label>
+        <label>CPU temperature<input id="cpu-threshold" type="number" min="1" max="120"><span>°C</span></label>
+        <label>Case temperature<input id="ambient-threshold" type="number" min="1" max="100"><span>°C</span></label>
+      </div></fieldset>
+      <label class="check"><input id="refresh-on-alert" type="checkbox">Refresh immediately when alert state changes</label>
+      <div class="dialog-actions"><button class="button button-secondary" id="settings-cancel" type="button">Cancel</button><button class="button" type="submit">Save settings</button></div>
+    </form>
+  </dialog>
+</body>
+</html>

@@ -1,8 +1,10 @@
 """Flask application factory and compatibility API."""
 from __future__ import annotations
+import json
+import time
 from datetime import datetime, timezone
 from typing import Any, Callable
-from flask import Flask, jsonify, request
+from flask import Flask, Response, jsonify, render_template, request, stream_with_context
 from .config import AppConfig
 from .database import MetricStore
 from .policy import validate_policy
@@ -28,7 +30,13 @@ def create_app(config: AppConfig, store: MetricStore, storage_provider: StorageP
         }
 
     @app.get("/")
-    def index(): return jsonify({"service": "NAS Monitoring Service", "api": "/api/v1"})
+    def index(): return render_template("dashboard.html")
+
+    @app.get("/api/v1")
+    def api_index():
+        return jsonify({"service": "NAS Monitoring Service", "schema_version": 1,
+                        "endpoints": ["/api/v1/health", "/api/v1/snapshot",
+                                      "/api/v1/events", "/api/v1/display/policy"]})
 
     @app.get("/api/v1/health")
     def health():
@@ -36,6 +44,18 @@ def create_app(config: AppConfig, store: MetricStore, storage_provider: StorageP
 
     @app.get("/api/v1/snapshot")
     def snapshot(): return jsonify(build_snapshot())
+
+    @app.get("/api/v1/events")
+    def events():
+        @stream_with_context
+        def generate():
+            while True:
+                yield f"event: snapshot\ndata: {json.dumps(build_snapshot(), separators=(',', ':'))}\n\n"
+                time.sleep(3)
+        response = Response(generate(), mimetype="text/event-stream")
+        response.headers["Cache-Control"] = "no-cache"
+        response.headers["X-Accel-Buffering"] = "no"
+        return response
 
     @app.get("/api/v1/display/policy")
     def get_policy(): return jsonify(store.get_policy())
