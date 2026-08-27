@@ -63,7 +63,9 @@ class DisplayAgent:
             if not cached_policy.get("offline_screen", True): return False
             offline_data = {"last_success": self.state.data.get("last_success")}
             image = get_renderer("offline").render(offline_data, cached_policy, self.hardware.size)
-            return self._show_if_needed(image, force=was_online)
+            shown = self._show_if_needed(image, force=was_online)
+            if shown: LOGGER.info("Displayed offline screen")
+            return shown
 
         try: policy = self.client.policy()
         except ApiError as error:
@@ -85,12 +87,15 @@ class DisplayAgent:
                   (policy.get("refresh_on_alert", True) and alert != old_alert))
         self.state.data.update(alert=alert, screen=screen)
         if not (due or urgent): return False
-        return self._show_if_needed(image)
+        shown = self._show_if_needed(image)
+        if shown: LOGGER.info("Displayed %s screen", renderer.name)
+        return shown
 
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
-    config = load_config(); state = StateStore(config.state_directory)
-    agent = DisplayAgent(NasClient(config), state, InkyHardware())
+    config = load_config(); state = StateStore(config.state_directory); hardware = InkyHardware()
+    LOGGER.info("Display agent started: server=%s panel=%sx%s", config.server_url, *hardware.size)
+    agent = DisplayAgent(NasClient(config), state, hardware)
     stopping = False
     def stop(_signum, _frame):
         nonlocal stopping; stopping = True
