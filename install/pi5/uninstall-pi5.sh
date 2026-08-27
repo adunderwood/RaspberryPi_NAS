@@ -14,14 +14,19 @@ if [ "$#" -gt 0 ] && [ "${1:-}" != "--purge" ]; then
 fi
 
 systemctl disable --now nas-monitor.service 2>/dev/null || true
-rm -f /etc/systemd/system/nas-monitor.service /usr/local/bin/nas-monitor
+rm -f /etc/systemd/system/nas-monitor.service
 systemctl daemon-reload
-rm -rf /opt/nas-monitor
 
 if [ "$purge" = true ]; then
+  rm -f /usr/local/bin/nas-monitor
+  rm -rf /opt/nas-monitor
   rm -rf /etc/nas-monitor /var/lib/nas-monitor
   userdel nas-monitor 2>/dev/null || true
   echo "NAS monitor uninstalled and configuration/database purged."
 else
-  echo "NAS monitor uninstalled. Preserved /etc/nas-monitor and /var/lib/nas-monitor."
+  # Keep only the uninstaller and its small command wrapper so a later
+  # `nas-monitor uninstall --purge` remains available.
+  find /opt/nas-monitor -mindepth 1 -maxdepth 1 ! -name uninstall-pi5.sh -exec rm -rf -- {} +
+  echo "NAS monitor uninstalled. Preserved configuration and database."
+  echo "Run 'nas-monitor uninstall --purge' later to remove all preserved data."
 fi

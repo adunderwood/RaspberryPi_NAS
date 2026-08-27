@@ -56,6 +56,9 @@ This preserves configuration and the SQLite database. To remove those too:
 nas-monitor uninstall --purge
 ```
 
+The small uninstall command remains installed after a normal uninstall, allowing
+the preserved configuration and database to be purged later.
+
 The installer disables the old service units to prevent port conflicts but does
 not delete their files. This makes the first migration reversible if hardware
 testing uncovers a problem.
