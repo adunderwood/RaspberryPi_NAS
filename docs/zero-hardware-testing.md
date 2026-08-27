@@ -1,7 +1,34 @@
 # Pi Zero 2W display-agent hardware test
 
-The Zero agent uses `10.99.0.1` by default in gadget mode. The only normal local
-configuration is the Pi 5 hostname or IP address.
+The supported deployment path runs from the Pi 5 over SSH on the USB gadget
+network. The Zero does not need Wi-Fi, DNS, GitHub, PyPI, or a default internet
+route. It needs SSH enabled and the `nas` account reachable at `10.99.0.2`.
+
+After pulling this branch, upgrade the Pi 5 installation once so it has the
+display source and deployment command:
+
+```bash
+cd ~/RaspberryPi_NAS
+git pull --ff-only
+sudo ./install/pi5/install-pi5.sh
+nas-monitor deploy-display
+```
+
+The command downloads/builds the Python wheels on the Pi 5, packages the Zero
+application, copies it with SCP, and runs the offline installer through SSH. It
+prompts for the Zero account and sudo credentials without storing them.
+
+Custom SSH account or gadget address:
+
+```bash
+nas-monitor deploy-display --user nas --host 10.99.0.2
+```
+
+## Direct development installation
+
+The Zero agent uses `10.99.0.1` by default in gadget mode. Direct installation
+on the Zero remains available for development, but requires temporary internet
+access to download packages:
 
 ```bash
 cd ~/RaspberryPi_NAS
@@ -9,7 +36,7 @@ git pull --ff-only
 sudo ./install/zero/install-zero.sh
 ```
 
-For Wi-Fi instead of gadget mode:
+To point the display traffic at a different server explicitly:
 
 ```bash
 sudo ./install/zero/install-zero.sh --server nas.local

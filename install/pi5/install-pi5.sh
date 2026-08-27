@@ -27,6 +27,14 @@ cp -a "$app_source/nas_monitor" /opt/nas-monitor/
 install -m 0755 "$app_source/nas_service.py" /opt/nas-monitor/nas_service.py
 install -m 0644 "$app_source/requirements.txt" /opt/nas-monitor/requirements.txt
 install -m 0755 "$script_dir/uninstall-pi5.sh" /opt/nas-monitor/uninstall-pi5.sh
+install -m 0755 "$script_dir/deploy-zero.sh" /opt/nas-monitor/deploy-zero.sh
+install -d -m 0755 /opt/nas-monitor/display-source/'Raspberry Pi Zero 2w' \
+  /opt/nas-monitor/display-source/config /opt/nas-monitor/display-source/install/zero
+cp -a "$repo_dir/Raspberry Pi Zero 2w/nas_display" /opt/nas-monitor/display-source/'Raspberry Pi Zero 2w'/
+install -m 0755 "$repo_dir/Raspberry Pi Zero 2w/nas.py" /opt/nas-monitor/display-source/'Raspberry Pi Zero 2w'/nas.py
+install -m 0644 "$repo_dir/Raspberry Pi Zero 2w/requirements.txt" /opt/nas-monitor/display-source/'Raspberry Pi Zero 2w'/requirements.txt
+install -m 0644 "$repo_dir/config/zero.example.toml" /opt/nas-monitor/display-source/config/zero.example.toml
+cp -a "$repo_dir/install/zero/." /opt/nas-monitor/display-source/install/zero/
 
 if [ ! -f /etc/nas-monitor/config.toml ]; then
   install -m 0644 "$repo_dir/config/pi5.example.toml" /etc/nas-monitor/config.toml

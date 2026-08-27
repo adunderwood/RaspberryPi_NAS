@@ -3,8 +3,14 @@ set -eu
 
 if [ "$(id -u)" -ne 0 ]; then echo "Run this installer with sudo." >&2; exit 1; fi
 server=10.99.0.1
-if [ "${1:-}" = "--server" ] && [ -n "${2:-}" ]; then server=$2; shift 2; fi
-if [ "$#" -ne 0 ]; then echo "Usage: install-zero.sh [--server HOST_OR_IP]" >&2; exit 2; fi
+wheelhouse=
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --server) [ -n "${2:-}" ] || { echo "--server requires a value" >&2; exit 2; }; server=$2; shift 2 ;;
+    --wheelhouse) [ -n "${2:-}" ] || { echo "--wheelhouse requires a value" >&2; exit 2; }; wheelhouse=$2; shift 2 ;;
+    *) echo "Usage: install-zero.sh [--server HOST_OR_IP] [--wheelhouse DIRECTORY]" >&2; exit 2 ;;
+  esac
+done
 
 script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 repo_dir=$(CDPATH= cd -- "$script_dir/../.." && pwd)
@@ -30,7 +36,13 @@ if [ ! -f /etc/nas-display/config.toml ]; then
   chmod 0644 /etc/nas-display/config.toml
 fi
 if [ ! -x /opt/nas-display/.venv/bin/python ]; then python3 -m venv /opt/nas-display/.venv; fi
-/opt/nas-display/.venv/bin/pip install --disable-pip-version-check -r /opt/nas-display/requirements.txt
+if [ -n "$wheelhouse" ]; then
+  [ -d "$wheelhouse" ] || { echo "Wheelhouse not found: $wheelhouse" >&2; exit 1; }
+  /opt/nas-display/.venv/bin/pip install --disable-pip-version-check --no-index \
+    --find-links "$wheelhouse" -r /opt/nas-display/requirements.txt
+else
+  /opt/nas-display/.venv/bin/pip install --disable-pip-version-check -r /opt/nas-display/requirements.txt
+fi
 
 install -m 0644 "$script_dir/nas-display.service" /etc/systemd/system/nas-display.service
 install -m 0755 "$script_dir/nas-display" /usr/local/bin/nas-display

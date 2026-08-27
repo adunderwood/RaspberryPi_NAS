@@ -16,6 +16,18 @@ This project is designed for a 3D-printed NAS case that houses:
 - **Cooling Fans** - Active cooling system
 - **Data-capable USB-A to Micro-USB cable** - Powers the Pi Zero 2W and provides the dedicated USB Ethernet connection
 
+### Supported Software Configuration
+
+The tested reference configuration uses 64-bit Raspberry Pi OS Bookworm and
+Python 3.11 on both Raspberry Pis. The Zero uses gadget address `10.99.0.2`, the
+Pi 5 uses `10.99.0.1`, and SSH is enabled on the Zero. Other configurations may
+work but are not currently tested or supported.
+
+Normal Zero installation and upgrades are initiated from the Pi 5 with
+`nas-monitor deploy-display`. Files and offline Python packages are transferred
+over SSH/SCP on the USB gadget connection; the Zero does not require Wi-Fi or
+internet access.
+
 **3D Printable Case**: [Thingiverse Thing #7010341](https://www.thingiverse.com/thing:7010341)
 
 ## 📊 Features

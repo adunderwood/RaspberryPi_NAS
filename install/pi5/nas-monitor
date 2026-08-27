@@ -11,12 +11,16 @@ case "$command" in
     curl --fail --silent --show-error http://127.0.0.1:5000/api/v1/health
     printf '\nNAS monitor is healthy.\n'
     ;;
+  deploy-display)
+    shift
+    exec /opt/nas-monitor/deploy-zero.sh "$@"
+    ;;
   uninstall)
     shift
     exec sudo /opt/nas-monitor/uninstall-pi5.sh "$@"
     ;;
   *)
-    echo "Usage: nas-monitor {status|restart|logs|doctor|uninstall [--purge]}" >&2
+    echo "Usage: nas-monitor {status|restart|logs|doctor|deploy-display [--host HOST] [--user USER]|uninstall [--purge]}" >&2
     exit 2
     ;;
 esac
