@@ -1,0 +1,25 @@
+[Unit]
+Description=NAS monitoring service and dashboard API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=nas-monitor
+Group=nas-monitor
+WorkingDirectory=/opt/nas-monitor
+Environment=NAS_MONITOR_CONFIG=/etc/nas-monitor/config.toml
+ExecStart=/opt/nas-monitor/.venv/bin/python /opt/nas-monitor/nas_service.py
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=nas-monitor
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/nas-monitor
+
+[Install]
+WantedBy=multi-user.target

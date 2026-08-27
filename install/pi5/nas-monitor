@@ -1,0 +1,22 @@
+#!/bin/sh
+set -eu
+
+command=${1:-status}
+case "$command" in
+  status) systemctl status nas-monitor.service ;;
+  restart) sudo systemctl restart nas-monitor.service ;;
+  logs) journalctl -u nas-monitor.service -f ;;
+  doctor)
+    systemctl is-active --quiet nas-monitor.service
+    curl --fail --silent --show-error http://127.0.0.1:5000/api/v1/health
+    printf '\nNAS monitor is healthy.\n'
+    ;;
+  uninstall)
+    shift
+    exec sudo /opt/nas-monitor/uninstall-pi5.sh "$@"
+    ;;
+  *)
+    echo "Usage: nas-monitor {status|restart|logs|doctor|uninstall [--purge]}" >&2
+    exit 2
+    ;;
+esac

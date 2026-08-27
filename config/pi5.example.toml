@@ -1,0 +1,15 @@
+[server]
+host = "0.0.0.0"
+port = 5000
+[database]
+path = "/var/lib/nas-monitor/metrics.sqlite3"
+retention_days = 30
+[collection]
+cpu_interval_seconds = 3
+temperature_interval_seconds = 10
+storage_interval_seconds = 60
+history_points = 18
+[sensors]
+cpu_temperature_path = "/sys/class/thermal/thermal_zone0/temp"
+one_wire_root = "/sys/bus/w1/devices"
+ambient_sensor_id = "auto"
