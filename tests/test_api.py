@@ -29,6 +29,8 @@ def test_dashboard_and_assets_are_served(client):
     assert b"System monitor" in response.data
     assert b"Approximate eInk display preview" in response.data
     assert b"Display theme" in response.data
+    assert b'id="cpu-temp-unit"' in response.data
+    assert b'id="ambient-temp-unit"' in response.data
     assert client.get("/static/dashboard.css").status_code == 200
     assert client.get("/static/dashboard.js").status_code == 200
 
