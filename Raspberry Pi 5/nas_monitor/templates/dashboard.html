@@ -71,8 +71,22 @@
         <button id="settings-close" class="icon-button" type="button" aria-label="Close">×</button>
       </div>
       <div id="settings-message" class="form-message" hidden></div>
+      <section class="preview-section" aria-label="Display preview">
+        <div class="preview-heading">
+          <div><p class="eyebrow">LIVE PREVIEW</p><h3>InkyPHAT screen</h3></div>
+          <label>Preview screen<select id="preview-screen"><option value="overview">Overview</option><option value="storage">Storage</option><option value="thermal">Thermal</option></select></label>
+        </div>
+        <div class="inky-preview"><canvas id="display-preview" width="500" height="244" role="img" aria-label="Approximate eInk display preview"></canvas></div>
+        <p class="preview-note">Approximate layout and three-colour rendering. Exact fonts and spacing depend on the detected panel.</p>
+      </section>
+      <fieldset class="theme-fieldset"><legend>Display theme</legend>
+        <div class="theme-options">
+          <label class="theme-option theme-light"><input type="radio" name="theme" value="light"><span><i></i>Light</span></label>
+          <label class="theme-option theme-dark"><input type="radio" name="theme" value="dark"><span><i></i>Dark</span></label>
+          <label class="theme-option theme-red"><input type="radio" name="theme" value="red"><span><i></i>Red</span></label>
+        </div>
+      </fieldset>
       <div class="form-grid">
-        <label>Theme<select id="theme"><option value="light">Light</option><option value="dark">Dark</option><option value="red">Red</option></select></label>
         <label>Temperature unit<select id="temperature-unit"><option value="F">Fahrenheit</option><option value="C">Celsius</option></select></label>
         <label>Screen mode<select id="screen-mode"><option value="fixed">Fixed screen</option><option value="rotate">Rotate screens</option></select></label>
         <label>Fixed screen<select id="fixed-screen"><option value="overview">Overview</option><option value="storage">Storage</option><option value="thermal">Thermal</option></select></label>
