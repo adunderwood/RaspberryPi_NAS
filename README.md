@@ -44,6 +44,9 @@ This project is designed for a 3D-printed NAS case that houses:
 > [`docs/hardware-testing.md`](docs/hardware-testing.md) for the public-branch
 > deployment and rollback-safe testing workflow.
 
+The corresponding Pi Zero 2W display-agent test is documented in
+[`docs/zero-hardware-testing.md`](docs/zero-hardware-testing.md).
+
 ### Prerequisites
 
 - Raspberry Pi 5 with Raspberry Pi OS

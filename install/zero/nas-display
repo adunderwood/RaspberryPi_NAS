@@ -1,0 +1,18 @@
+#!/bin/sh
+set -eu
+command=${1:-status}
+case "$command" in
+  status) systemctl status nas-display.service ;;
+  restart) sudo systemctl restart nas-display.service ;;
+  logs) journalctl -u nas-display.service -f ;;
+  doctor)
+    systemctl is-active --quiet nas-display.service
+    config=/etc/nas-display/config.toml
+    server=$(sed -n 's/^[[:space:]]*address[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' "$config")
+    case "$server" in http://*|https://*) base=$server ;; *) base="http://$server:5000" ;; esac
+    curl --fail --silent --show-error "$base/api/v1/health"
+    printf '\nNAS display agent is healthy.\n'
+    ;;
+  uninstall) shift; exec sudo /opt/nas-display/uninstall-zero.sh "$@" ;;
+  *) echo "Usage: nas-display {status|restart|logs|doctor|uninstall [--purge]}" >&2; exit 2 ;;
+esac

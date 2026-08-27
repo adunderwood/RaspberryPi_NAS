@@ -1,0 +1,26 @@
+[Unit]
+Description=NAS Inky display agent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=nas-display
+Group=nas-display
+SupplementaryGroups=spi gpio i2c
+WorkingDirectory=/opt/nas-display
+Environment=NAS_DISPLAY_CONFIG=/etc/nas-display/config.toml
+ExecStart=/opt/nas-display/.venv/bin/python /opt/nas-display/nas.py
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=nas-display
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/nas-display
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,10 @@
+[server]
+# Gadget mode works without user configuration. For Wi-Fi, replace this with a
+# hostname such as "nas.local" or the Pi 5's LAN address.
+address = "10.99.0.1"
+connect_timeout_seconds = 3
+read_timeout_seconds = 5
+
+[agent]
+poll_interval_seconds = 30
+state_directory = "/var/lib/nas-display"
