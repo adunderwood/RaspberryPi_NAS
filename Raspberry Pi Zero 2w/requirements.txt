@@ -1,3 +1,6 @@
-inky[rpi,example-depends]>=1.5.0
+# Inky 2.x includes its Raspberry Pi runtime dependencies. The former
+# example-depends extra pulled large demo-only packages such as pandas,
+# matplotlib, seaborn, geocoder, and wikiquotes into every deployment bundle.
+inky>=2.4.0,<3
 Pillow>=10.0.0
 requests>=2.31.0
