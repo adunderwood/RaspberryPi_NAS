@@ -7,7 +7,7 @@ class StorageRenderer:
     def render(self, snapshot: dict, policy: dict, size: tuple[int, int]) -> Image.Image:
         array = (snapshot.get("storage", {}).get("arrays") or [{}])[0]
         percent = float(array.get("usage_percent", 0)); thresholds = policy.get("thresholds", {})
-        colors = theme("red" if percent >= float(thresholds.get("storage_percent", 90)) else policy.get("theme", "light"))
+        colors = theme("alert" if percent >= float(thresholds.get("storage_percent", 90)) else policy.get("theme", "light"))
         image = Image.new("P", size, colors["background"]); draw = ImageDraw.Draw(image)
         width, height = size
         draw.text((8, 5), "STORAGE", font=font(13, True), fill=colors["accent"])

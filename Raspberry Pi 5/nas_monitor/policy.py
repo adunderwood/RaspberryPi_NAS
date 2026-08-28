@@ -13,7 +13,7 @@ def validate_policy(candidate: Any) -> dict[str, Any]:
     policy = dict(DEFAULT_POLICY)
     policy.update({k: v for k, v in candidate.items() if k not in {"revision", "updated_at"}})
     if policy["mode"] not in {"fixed", "rotate"}: raise ValueError("mode must be fixed or rotate")
-    if policy["theme"] not in {"light", "dark", "red"}: raise ValueError("invalid theme")
+    if policy["theme"] not in {"light", "dark"}: raise ValueError("invalid theme")
     if policy["temperature_unit"] not in {"C", "F"}: raise ValueError("temperature_unit must be C or F")
     if policy["fixed_screen"] not in SCREEN_TYPES: raise ValueError("invalid fixed_screen")
     if not isinstance(policy["screens"], list) or not policy["screens"]: raise ValueError("screens cannot be empty")

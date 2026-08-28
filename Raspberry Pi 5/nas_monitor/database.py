@@ -35,6 +35,14 @@ class MetricStore:
             self._connection.execute(
                 "INSERT OR IGNORE INTO application_state(key,value,revision,updated_at) VALUES(?,?,1,?)",
                 ("display_policy", json.dumps(DEFAULT_POLICY), self.now()))
+            row = self._connection.execute(
+                "SELECT value FROM application_state WHERE key='display_policy'").fetchone()
+            stored_policy = json.loads(row["value"])
+            if stored_policy.get("theme") == "red":
+                stored_policy["theme"] = "light"
+                self._connection.execute(
+                    "UPDATE application_state SET value=?,revision=revision+1,updated_at=? WHERE key='display_policy'",
+                    (json.dumps(stored_policy), self.now()))
 
     @staticmethod
     def now() -> str:

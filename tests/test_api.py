@@ -59,5 +59,8 @@ def test_policy_validation_and_revision(client):
     assert response.status_code == 200
     assert response.json["revision"] == revision + 1
     assert client.put("/api/v1/display/policy", json={"mode":"broken"}).status_code == 400
+    policy["theme"] = "red"
+    assert client.put("/api/v1/display/policy", json=policy).status_code == 400
+    policy["theme"] = "dark"
     policy["screens"] = [{"type":"not-installed"}]
     assert client.put("/api/v1/display/policy", json=policy).status_code == 400

@@ -10,7 +10,7 @@ def font(size: int, bold: bool = False):
 
 def theme(name: str):
     if name == "dark": return {"background": BLACK, "foreground": WHITE, "accent": RED}
-    if name == "red": return {"background": RED, "foreground": WHITE, "accent": WHITE}
+    if name == "alert": return {"background": RED, "foreground": WHITE, "accent": WHITE}
     return {"background": WHITE, "foreground": BLACK, "accent": RED}
 
 def temperature(value, unit: str) -> str:

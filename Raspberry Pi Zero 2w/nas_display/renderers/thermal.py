@@ -9,7 +9,7 @@ class ThermalRenderer:
         thresholds = policy.get("thresholds", {})
         alert = ((cpu is not None and cpu >= float(thresholds.get("cpu_temperature_c", 80))) or
                  (ambient is not None and ambient >= float(thresholds.get("ambient_temperature_c", 35))))
-        colors = theme("red" if alert else policy.get("theme", "light")); unit = policy.get("temperature_unit", "F")
+        colors = theme("alert" if alert else policy.get("theme", "light")); unit = policy.get("temperature_unit", "F")
         image = Image.new("P", size, colors["background"]); draw = ImageDraw.Draw(image)
         width, height = size; value_font = font(31 if height <= 104 else 39, True); label_font = font(12, True)
         draw.text((8, 5), "THERMAL", font=font(13, True), fill=colors["accent"])

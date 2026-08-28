@@ -3,7 +3,7 @@ const formatBytes=value=>{if(value==null)return'--';const units=['B','KiB','MiB'
 const formatTime=value=>value?new Date(value).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'}):'Waiting for data';
 const displayTemperature=value=>{if(value==null)return'--';const unit=currentPolicy?.temperature_unit||'C';return(unit==='F'?value*9/5+32:value).toFixed(1)};
 function renderTemperatureUnits(){const unit=currentPolicy?.temperature_unit||'C';$('cpu-temp-unit').textContent=`°${unit}`;$('ambient-temp-unit').textContent=`°${unit}`}
-const previewColors=name=>name==='dark'?{bg:'#171717',fg:'#f4f1df',accent:'#d4483f'}:name==='red'?{bg:'#d4483f',fg:'#f4f1df',accent:'#f4f1df'}:{bg:'#f4f1df',fg:'#171717',accent:'#d4483f'};
+const previewColors=name=>name==='dark'?{bg:'#171717',fg:'#f4f1df',accent:'#d4483f'}:name==='alert'?{bg:'#d4483f',fg:'#f4f1df',accent:'#f4f1df'}:{bg:'#f4f1df',fg:'#171717',accent:'#d4483f'};
 const previewTemperature=(value,unit)=>{if(value==null)return'--';if(unit==='F')value=value*9/5+32;return`${value.toFixed(0)}°${unit}`};
 function previewText(context,text,x,y,size,color,weight=700){context.fillStyle=color;context.font=`${weight} ${size}px ui-sans-serif,system-ui,sans-serif`;context.fillText(text,x,y)}
 function renderDisplayPreview(){
@@ -13,7 +13,7 @@ function renderDisplayPreview(){
   const unit=$('temperature-unit').value||currentPolicy.temperature_unit,array=lastSnapshot.storage?.arrays?.[0]||{};
   const cpu=lastSnapshot.cpu||{},ambient=lastSnapshot.ambient||{},drives=array.drives||[];
   const driveAlert=Number(array.degraded_drives||0)>0||drives.some(drive=>!drive.healthy);
-  const colors=previewColors(screen==='drive_health'&&driveAlert?'red':selectedTheme);
+  const colors=previewColors(screen==='drive_health'&&driveAlert?'alert':selectedTheme);
   context.fillStyle=colors.bg;context.fillRect(0,0,canvas.width,canvas.height);context.textBaseline='alphabetic';
   if(screen==='overview'){
     previewText(context,`${Number(array.usage_percent||0).toFixed(0)}%`,20,104,84,colors.fg,800);

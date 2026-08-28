@@ -10,7 +10,7 @@ class OverviewRenderer:
         percent = float(array.get("usage_percent", 0))
         thresholds = policy.get("thresholds", {})
         alert = percent >= float(thresholds.get("storage_percent", 90))
-        colors = theme("red" if alert else policy.get("theme", "light"))
+        colors = theme("alert" if alert else policy.get("theme", "light"))
         image = Image.new("P", size, colors["background"]); draw = ImageDraw.Draw(image)
         width, height = size; compact = height <= 104
         large = font(43 if compact else 50, True); normal = font(12 if compact else 14, True)

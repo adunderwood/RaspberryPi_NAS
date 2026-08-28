@@ -11,7 +11,7 @@ class DriveHealthRenderer:
         drives = array.get("drives") or []
         degraded = int(array.get("degraded_drives", 0) or 0)
         alert = degraded > 0 or any(not drive.get("healthy", False) for drive in drives)
-        colors = theme("red" if alert else policy.get("theme", "light"))
+        colors = theme("alert" if alert else policy.get("theme", "light"))
         image = Image.new("P", size, colors["background"]); draw = ImageDraw.Draw(image)
         width, height = size
         draw.text((8, 5), "DRIVE HEALTH", font=font(13, True), fill=colors["accent"])
