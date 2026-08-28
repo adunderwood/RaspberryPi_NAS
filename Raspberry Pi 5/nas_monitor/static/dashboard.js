@@ -16,23 +16,23 @@ function renderDisplayPreview(){
   const colors=previewColors(screen==='drive_health'&&driveAlert?'alert':selectedTheme);
   context.fillStyle=colors.bg;context.fillRect(0,0,canvas.width,canvas.height);context.textBaseline='alphabetic';
   if(screen==='overview'){
-    previewText(context,`${Number(array.usage_percent||0).toFixed(0)}%`,20,104,84,colors.fg,800);
+    previewText(context,`${Number(array.usage_percent||0).toFixed(0)}%`,30,104,84,colors.fg,800);
     previewText(context,`Total  ${formatBytes(array.bytes_total).replace(' ','')}`,270,45,25,colors.fg);
     previewText(context,`Used   ${formatBytes(array.bytes_used).replace(' ','')}`,270,80,25,colors.fg);
     previewText(context,`Free   ${formatBytes(array.bytes_free).replace(' ','')}`,270,115,25,colors.fg);
-    previewText(context,`CPU ${previewTemperature(cpu.temperature_c,unit)}   CASE ${previewTemperature(ambient.temperature_c,unit)}`,20,150,24,colors.fg);
-    previewText(context,'CPU',20,213,20,colors.fg);const history=(cpu.usage_history||[]).slice(-18),start=85,width=390/barOrOne(history.length);
+    previewText(context,`CPU ${previewTemperature(cpu.temperature_c,unit)}   CASE ${previewTemperature(ambient.temperature_c,unit)}`,30,150,24,colors.fg);
+    previewText(context,'CPU',30,213,20,colors.fg);const history=(cpu.usage_history||[]).slice(-18),start=92,width=378/barOrOne(history.length);
     history.forEach((point,index)=>{const height=Math.max(3,Math.min(42,Number(point.value||0)*.42));context.fillStyle=colors.accent;context.fillRect(start+index*width,216-height,Math.max(3,width-3),height)})
   }else if(screen==='storage'){
-    previewText(context,'STORAGE',18,31,22,colors.accent,800);previewText(context,`${Number(array.usage_percent||0).toFixed(1)}%`,18,126,82,colors.fg,800);
+    previewText(context,'STORAGE',30,31,22,colors.accent,800);previewText(context,`${Number(array.usage_percent||0).toFixed(1)}%`,30,126,82,colors.fg,800);
     previewText(context,`Total  ${formatBytes(array.bytes_total).replace(' ','')}`,275,63,24,colors.fg);previewText(context,`Used   ${formatBytes(array.bytes_used).replace(' ','')}`,275,101,24,colors.fg);previewText(context,`Free   ${formatBytes(array.bytes_free).replace(' ','')}`,275,139,24,colors.fg);
-    context.strokeStyle=colors.fg;context.lineWidth=3;context.strokeRect(18,209,464,16);context.fillStyle=colors.accent;context.fillRect(20,211,460*Math.min(100,Number(array.usage_percent||0))/100,12)
+    context.strokeStyle=colors.fg;context.lineWidth=3;context.strokeRect(30,209,440,15);context.fillStyle=colors.accent;context.fillRect(32,211,436*Math.min(100,Number(array.usage_percent||0))/100,11)
   }else if(screen==='thermal'){
-    previewText(context,'THERMAL',18,31,22,colors.accent,800);previewText(context,previewTemperature(cpu.temperature_c,unit),18,124,64,colors.fg,800);previewText(context,previewTemperature(ambient.temperature_c,unit),270,124,64,colors.fg,800);previewText(context,'CPU',18,206,24,colors.fg);previewText(context,'CASE',270,206,24,colors.fg);context.strokeStyle=colors.accent;context.lineWidth=4;context.beginPath();context.moveTo(250,45);context.lineTo(250,216);context.stroke()
+    previewText(context,'THERMAL',30,31,22,colors.accent,800);previewText(context,previewTemperature(cpu.temperature_c,unit),30,124,64,colors.fg,800);previewText(context,previewTemperature(ambient.temperature_c,unit),270,124,64,colors.fg,800);previewText(context,'CPU',30,206,24,colors.fg);previewText(context,'CASE',270,206,24,colors.fg);context.strokeStyle=colors.accent;context.lineWidth=4;context.beginPath();context.moveTo(250,45);context.lineTo(250,216);context.stroke()
   }else{
-    previewText(context,'DRIVE HEALTH',18,31,22,colors.accent,800);previewText(context,!drives.length?'UNKNOWN':(driveAlert?'DEGRADED':'ALL HEALTHY'),330,31,18,colors.fg,800);
+    previewText(context,'DRIVE HEALTH',30,31,22,colors.accent,800);previewText(context,!drives.length?'UNKNOWN':(driveAlert?'DEGRADED':'ALL HEALTHY'),330,31,18,colors.fg,800);
     if(!drives.length){previewText(context,'NO MEMBER DATA',128,124,38,colors.fg,800);previewText(context,'Linux MD array not detected',128,160,19,colors.fg,500);return}
-    drives.slice(0,4).forEach((drive,index)=>{const y=73+index*43;previewText(context,String(drive.device||'unknown').replace('/dev/',''),24,y,27,colors.fg,800);previewText(context,drive.healthy?'OK':String(drive.state||'FAULT').replaceAll('_',' ').toUpperCase(),340,y,23,drive.healthy?colors.fg:colors.accent,800);if(index<Math.min(4,drives.length)-1){context.fillStyle=colors.accent;context.fillRect(20,y+13,460,2)}})
+    drives.slice(0,4).forEach((drive,index)=>{const y=73+index*40;previewText(context,String(drive.device||'unknown').replace('/dev/',''),30,y,27,colors.fg,800);previewText(context,drive.healthy?'OK':String(drive.state||'FAULT').replaceAll('_',' ').toUpperCase(),340,y,23,drive.healthy?colors.fg:colors.accent,800);if(index<Math.min(4,drives.length)-1){context.fillStyle=colors.accent;context.fillRect(30,y+11,440,2)}})
   }
 }
 function barOrOne(value){return Math.max(1,value)}
