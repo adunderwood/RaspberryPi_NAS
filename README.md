@@ -45,9 +45,9 @@ internet access.
 ### Display (Pi Zero 2W)
 
 - **E-Ink Dashboard** - Shows disk usage, temperatures, and CPU activity sparkline
-- **Visual Warnings** - Switches to red theme when thresholds are exceeded
-- **Auto-refresh** - Updates every 5 minutes via cron
-- **Configurable Themes** - Light, dark, and red color schemes
+- **Visual Warnings** - Uses red when thresholds are exceeded
+- **Managed Refreshes** - The display agent refreshes on its configured policy and suppresses redundant panel updates
+- **Configurable Themes** - User-selectable light and dark color schemes
 - **Dedicated USB Network** - Communicates with the NAS without depending on Wi-Fi, DNS, or mDNS
 - **Single-Cable Connection** - The same USB cable powers the Zero and carries Ethernet gadget traffic
 

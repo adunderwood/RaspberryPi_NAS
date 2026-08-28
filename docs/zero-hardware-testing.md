@@ -36,11 +36,15 @@ git pull --ff-only
 sudo ./install/zero/install-zero.sh
 ```
 
-To point the display traffic at a different server explicitly:
+To intentionally use the Wi-Fi escape hatch, pass the Pi 5's LAN address
+explicitly. This overrides the gadget-mode default:
 
 ```bash
-sudo ./install/zero/install-zero.sh --server nas.local
+sudo ./install/zero/install-zero.sh --server 192.168.1.50
 ```
+
+Every installation updates the server address in the existing configuration;
+the remaining display settings and cached state are preserved.
 
 The installer removes only the legacy `/home/nas/display/display.sh` cron entry,
 then installs and restarts one `nas-display.service`.

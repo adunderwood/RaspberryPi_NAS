@@ -31,10 +31,18 @@ install -m 0755 "$app_source/nas.py" /opt/nas-display/nas.py
 install -m 0644 "$app_source/requirements.txt" /opt/nas-display/requirements.txt
 install -m 0755 "$script_dir/uninstall-zero.sh" /opt/nas-display/uninstall-zero.sh
 
-if [ ! -f /etc/nas-display/config.toml ]; then
-  sed "s/address = \"10.99.0.1\"/address = \"$server\"/" "$repo_dir/config/zero.example.toml" > /etc/nas-display/config.toml
-  chmod 0644 /etc/nas-display/config.toml
-fi
+config_file=/etc/nas-display/config.toml
+config_source=$config_file
+[ -f "$config_file" ] || config_source="$repo_dir/config/zero.example.toml"
+config_tmp=$(mktemp)
+sed "s|^[[:space:]]*address[[:space:]]*=.*$|address = \"$server\"|" "$config_source" > "$config_tmp"
+grep -Fqx "address = \"$server\"" "$config_tmp" || {
+  rm -f "$config_tmp"
+  echo "Could not update [server] address in $config_source" >&2
+  exit 1
+}
+install -m 0644 "$config_tmp" "$config_file"
+rm -f "$config_tmp"
 if [ ! -x /opt/nas-display/.venv/bin/python ]; then python3 -m venv /opt/nas-display/.venv; fi
 if [ -n "$wheelhouse" ]; then
   [ -d "$wheelhouse" ] || { echo "Wheelhouse not found: $wheelhouse" >&2; exit 1; }

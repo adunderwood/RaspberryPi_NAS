@@ -1,6 +1,6 @@
 [server]
-# Gadget mode works without user configuration. For Wi-Fi, replace this with a
-# hostname such as "nas.local" or the Pi 5's LAN address.
+# Gadget mode is the supported default. Pass --server explicitly to the Zero
+# installer only when intentionally using the Wi-Fi escape hatch.
 address = "10.99.0.1"
 connect_timeout_seconds = 3
 read_timeout_seconds = 5
