@@ -4,6 +4,7 @@ from nas_display.renderers.storage import StorageRenderer
 from nas_display.renderers.thermal import ThermalRenderer
 from nas_display.renderers.drive_health import DriveHealthRenderer
 from nas_display.renderers.common import safe_area
+from nas_display.renderers.startup import StartupRenderer
 
 def test_renderers_produce_panel_sized_palette_images():
     snapshot = {"cpu":{"temperature_c":50,"usage_history":[{"value":10},{"value":50}]},
@@ -33,3 +34,11 @@ def test_renderers_preserve_original_panel_safe_area():
             assert all(image.getpixel((x, y)) == background for x in range(right + 1, size[0]) for y in range(size[1]))
             assert all(image.getpixel((x, y)) == background for y in range(top) for x in range(size[0]))
             assert all(image.getpixel((x, y)) == background for y in range(bottom + 1, size[1]) for x in range(size[0]))
+
+def test_startup_logo_is_scaled_to_supported_three_color_panels():
+    for size in ((212, 104), (250, 122)):
+        image = StartupRenderer().render({}, {}, size)
+        assert image.size == size
+        assert image.mode == "P"
+        assert set(image.tobytes()) <= {0, 1, 2}
+        assert image.getpixel((0, 0)) == image.getpixel((size[0] - 1, size[1] - 1))

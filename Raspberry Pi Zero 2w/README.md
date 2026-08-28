@@ -7,8 +7,9 @@ A Python script that displays NAS system information on a Pimoroni InkyPHAT e-in
 - **Disk Usage**: Shows total, used, and free space with percentage
 - **CPU Metrics**: Real-time CPU usage sparkline chart
 - **Temperature Monitoring**: Displays both ambient and CPU temperature
-- **Visual Warnings**: Automatically switches to red theme when disk usage or temperature exceeds thresholds
-- **Configurable Themes**: Light, dark, and red color schemes
+- **Visual Warnings**: Automatically uses red when disk usage, temperature, or drive health triggers an alert
+- **Configurable Themes**: User-selectable light and dark color schemes
+- **Startup Feedback**: Force-renders the Bunny NAS logo before the first API request, confirming that the panel initialized and preventing stale refresh state from leaving it blank after reboot
 
 ## Hardware Requirements
 

@@ -62,3 +62,12 @@ def test_agent_suppresses_unneeded_and_repeated_offline_refreshes(tmp_path):
     client.offline = False; now[0] += 30
     assert agent.run_once() is True
     assert len(hardware.images) == 3
+
+def test_startup_logo_forces_hardware_refresh_without_suppressing_data(tmp_path):
+    hardware = FakeHardware()
+    agent = DisplayAgent(FakeClient(), StateStore(str(tmp_path)), hardware, clock=lambda: 1000)
+    agent.show_startup()
+    assert len(hardware.images) == 1
+    assert agent.state.data["last_show"] == 0
+    assert agent.run_once() is True
+    assert len(hardware.images) == 2

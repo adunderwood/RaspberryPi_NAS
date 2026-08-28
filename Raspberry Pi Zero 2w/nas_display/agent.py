@@ -6,6 +6,7 @@ from .client import ApiError, NasClient
 from .config import load_config
 from .display import InkyHardware
 from .renderers import get_renderer
+from .renderers.startup import StartupRenderer
 from .state import StateStore
 
 LOGGER = logging.getLogger(__name__)
@@ -54,6 +55,14 @@ class DisplayAgent:
         self.state.save()
         return True
 
+    def show_startup(self) -> None:
+        image = StartupRenderer().render({}, FALLBACK_POLICY, self.hardware.size)
+        self.hardware.show(image)
+        # The splash must never suppress the first real monitoring screen.
+        self.state.data.update(image_hash=image_hash(image), last_show=0)
+        self.state.save()
+        LOGGER.info("Displayed startup logo")
+
     def run_once(self) -> bool:
         now = self.clock()
         cached_policy = self.state.data.get("policy") or FALLBACK_POLICY
@@ -99,6 +108,7 @@ def main() -> None:
     config = load_config(); state = StateStore(config.state_directory); hardware = InkyHardware()
     LOGGER.info("Display agent started: server=%s panel=%sx%s", config.server_url, *hardware.size)
     agent = DisplayAgent(NasClient(config), state, hardware)
+    agent.show_startup()
     stopping = False
     def stop(_signum, _frame):
         nonlocal stopping; stopping = True
