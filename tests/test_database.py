@@ -13,15 +13,17 @@ def test_metrics_and_policy_are_persistent(tmp_path):
     assert reopened.get_policy()["theme"] == "dark"
     reopened.close()
 
-def test_legacy_red_theme_is_migrated_to_light(tmp_path):
+def test_legacy_display_defaults_are_migrated(tmp_path):
     path = tmp_path / "metrics.sqlite3"
     store = MetricStore(str(path))
     policy = store.get_policy(); policy["theme"] = "red"
-    red_revision = store.set_policy(policy)["revision"]
+    policy["thresholds"]["ambient_temperature_c"] = 35
+    legacy_revision = store.set_policy(policy)["revision"]
     store.close()
 
     reopened = MetricStore(str(path))
     migrated = reopened.get_policy()
     assert migrated["theme"] == "light"
-    assert migrated["revision"] == red_revision + 1
+    assert migrated["thresholds"]["ambient_temperature_c"] == 37.8
+    assert migrated["revision"] == legacy_revision + 1
     reopened.close()

@@ -8,7 +8,7 @@ POLICY = {
     "rotation_interval_seconds":300, "refresh_interval_seconds":300,
     "theme":"light", "temperature_unit":"F", "revision":1,
     "offline_screen":True, "refresh_on_alert":True,
-    "thresholds":{"storage_percent":90,"cpu_temperature_c":80,"ambient_temperature_c":35},
+    "thresholds":{"storage_percent":90,"cpu_temperature_c":80,"ambient_temperature_c":37.8},
 }
 SNAPSHOT = {
     "schema_version":1, "status":"ok", "cpu":{"usage_percent":10,"temperature_c":50,"usage_history":[]},

@@ -10,7 +10,7 @@ DEFAULT_POLICY: dict[str, Any] = {
     "rotation_interval_seconds": 300, "refresh_interval_seconds": 300,
     "cpu_bucket_seconds": 300, "refresh_on_alert": True, "offline_screen": True,
     "daily_cleanup": {"enabled": True, "time": "03:00"},
-    "thresholds": {"storage_percent": 90, "cpu_temperature_c": 80, "ambient_temperature_c": 35},
+    "thresholds": {"storage_percent": 90, "cpu_temperature_c": 80, "ambient_temperature_c": 37.8},
     "theme": "light", "temperature_unit": "F",
 }
 
@@ -38,8 +38,15 @@ class MetricStore:
             row = self._connection.execute(
                 "SELECT value FROM application_state WHERE key='display_policy'").fetchone()
             stored_policy = json.loads(row["value"])
+            migrated = False
             if stored_policy.get("theme") == "red":
                 stored_policy["theme"] = "light"
+                migrated = True
+            thresholds = stored_policy.get("thresholds", {})
+            if thresholds.get("ambient_temperature_c") == 35:
+                thresholds["ambient_temperature_c"] = 37.8
+                migrated = True
+            if migrated:
                 self._connection.execute(
                     "UPDATE application_state SET value=?,revision=revision+1,updated_at=? WHERE key='display_policy'",
                     (json.dumps(stored_policy), self.now()))

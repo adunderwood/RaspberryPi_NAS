@@ -42,3 +42,10 @@ def test_startup_logo_is_scaled_to_supported_three_color_panels():
         assert image.mode == "P"
         assert set(image.tobytes()) <= {0, 1, 2}
         assert image.getpixel((0, 0)) == image.getpixel((size[0] - 1, size[1] - 1))
+
+def test_cpu_history_uses_foreground_instead_of_alert_red():
+    snapshot = {"cpu":{"temperature_c":50,"usage_history":[{"value":100}]},
+                "ambient":{"temperature_c":25}, "storage":{"arrays":[{"usage_percent":40}]}}
+    policy = {"theme":"dark","temperature_unit":"F","thresholds":{"storage_percent":90}}
+    image = OverviewRenderer().render(snapshot, policy, (250, 122))
+    assert image.getpixel((50, 110)) == 0

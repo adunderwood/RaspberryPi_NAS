@@ -8,7 +8,7 @@ class ThermalRenderer:
         cpu = snapshot.get("cpu", {}).get("temperature_c"); ambient = snapshot.get("ambient", {}).get("temperature_c")
         thresholds = policy.get("thresholds", {})
         alert = ((cpu is not None and cpu >= float(thresholds.get("cpu_temperature_c", 80))) or
-                 (ambient is not None and ambient >= float(thresholds.get("ambient_temperature_c", 35))))
+                 (ambient is not None and ambient >= float(thresholds.get("ambient_temperature_c", 37.8))))
         colors = theme("alert" if alert else policy.get("theme", "light")); unit = policy.get("temperature_unit", "F")
         image = Image.new("P", size, colors["background"]); draw = ImageDraw.Draw(image)
         width, height = size; left, top, safe_right, safe_bottom = safe_area(size)

@@ -34,5 +34,5 @@ class OverviewRenderer:
                 value = max(0, min(100, float(point.get("value", 0))))
                 bar_h = max(1, round(chart_h * value / 100))
                 draw.rectangle((chart_x + index * bar_w, chart_y + chart_h - bar_h,
-                                chart_x + (index + 1) * bar_w - 1, chart_y + chart_h), fill=colors["accent"])
+                                chart_x + (index + 1) * bar_w - 1, chart_y + chart_h), fill=colors["foreground"])
         return image

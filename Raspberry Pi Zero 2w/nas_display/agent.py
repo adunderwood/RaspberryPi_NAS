@@ -15,7 +15,7 @@ FALLBACK_POLICY = {
     "rotation_interval_seconds": 300, "refresh_interval_seconds": 300,
     "theme": "light", "temperature_unit": "F", "revision": 0,
     "offline_screen": True, "refresh_on_alert": True,
-    "thresholds": {"storage_percent": 90, "cpu_temperature_c": 80, "ambient_temperature_c": 35},
+    "thresholds": {"storage_percent": 90, "cpu_temperature_c": 80, "ambient_temperature_c": 37.8},
 }
 
 def image_hash(image) -> str:
@@ -41,7 +41,7 @@ def is_alert(snapshot: dict[str, Any], policy: dict[str, Any]) -> bool:
     ambient = snapshot.get("ambient", {}).get("temperature_c")
     return (storage_alert or drive_alert or
             (cpu_temp is not None and cpu_temp >= float(thresholds.get("cpu_temperature_c", 80))) or
-            (ambient is not None and ambient >= float(thresholds.get("ambient_temperature_c", 35))))
+            (ambient is not None and ambient >= float(thresholds.get("ambient_temperature_c", 37.8))))
 
 class DisplayAgent:
     def __init__(self, client: NasClient, state: StateStore, hardware, clock=time.time):

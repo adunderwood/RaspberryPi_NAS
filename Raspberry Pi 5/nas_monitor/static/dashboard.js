@@ -22,7 +22,7 @@ function renderDisplayPreview(){
     previewText(context,`Free   ${formatBytes(array.bytes_free).replace(' ','')}`,270,115,25,colors.fg);
     previewText(context,`CPU ${previewTemperature(cpu.temperature_c,unit)}   CASE ${previewTemperature(ambient.temperature_c,unit)}`,30,150,24,colors.fg);
     previewText(context,'CPU',30,213,20,colors.fg);const history=(cpu.usage_history||[]).slice(-18),start=92,width=378/barOrOne(history.length);
-    history.forEach((point,index)=>{const height=Math.max(3,Math.min(42,Number(point.value||0)*.42));context.fillStyle=colors.accent;context.fillRect(start+index*width,216-height,Math.max(3,width-3),height)})
+    history.forEach((point,index)=>{const height=Math.max(3,Math.min(42,Number(point.value||0)*.42));context.fillStyle=colors.fg;context.fillRect(start+index*width,216-height,Math.max(3,width-3),height)})
   }else if(screen==='storage'){
     previewText(context,'STORAGE',30,31,22,colors.accent,800);previewText(context,`${Number(array.usage_percent||0).toFixed(1)}%`,30,126,82,colors.fg,800);
     previewText(context,`Total  ${formatBytes(array.bytes_total).replace(' ','')}`,275,63,24,colors.fg);previewText(context,`Used   ${formatBytes(array.bytes_used).replace(' ','')}`,275,101,24,colors.fg);previewText(context,`Free   ${formatBytes(array.bytes_free).replace(' ','')}`,275,139,24,colors.fg);
