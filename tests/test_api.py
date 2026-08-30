@@ -26,6 +26,7 @@ def test_versioned_snapshot_is_typed(client):
     assert response.status_code == 200
     assert response.json["cpu"]["usage_percent"] == 25
     assert response.json["memory"]["usage_percent"] == 62.5
+    assert response.json["cpu"]["history_bucket_seconds"] == 300
     assert response.json["storage"]["arrays"][0]["bytes_total"] == 10737418240
 
 def test_dashboard_and_assets_are_served(client):
@@ -38,6 +39,7 @@ def test_dashboard_and_assets_are_served(client):
     assert b"CPU &amp; RAM" in response.data
     assert b"Check one screen to keep it displayed" in response.data
     assert b"Check two or more to rotate" in response.data
+    assert b">45 minutes<" in response.data
     assert b'id="cpu-temp-unit"' in response.data
     assert b'id="ambient-temp-unit"' in response.data
     assert client.get("/static/dashboard.css").status_code == 200

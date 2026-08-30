@@ -14,8 +14,11 @@ temperature unit, fixed or rotating screens, refresh timing, and alert
 thresholds. Available screens include overview, storage, thermal, and individual
 Linux MD member-drive health. The dashboard polls the snapshot endpoint for live
 updates so it does not occupy the service's worker pool; `/api/v1/events` remains
-available to API clients. No frontend
-build step is needed.
+available to API clients. No frontend build step is needed.
+
+Refresh and rotation durations are selected in minutes. The service keeps raw
+metric samples in SQLite and derives chart averages using the selected refresh
+duration, so changing the scale does not discard historical detail.
 
 ## Features
 

@@ -26,7 +26,7 @@ def validate_policy(candidate: Any) -> dict[str, Any]:
         if not isinstance(override, dict) or override.get("type") not in SCREEN_TYPES:
             raise ValueError("invalid display_override")
         policy["display_override"] = override
-    for key in ("rotation_interval_seconds", "refresh_interval_seconds"):
+    for key in ("rotation_interval_seconds", "refresh_interval_seconds", "cpu_bucket_seconds"):
         if not isinstance(policy[key], int) or policy[key] < 60:
             raise ValueError(f"{key} must be at least 60 seconds")
     thresholds = policy.get("thresholds")

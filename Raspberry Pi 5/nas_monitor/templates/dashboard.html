@@ -87,12 +87,12 @@
       </fieldset>
       <div class="form-grid">
         <label>Temperature unit<select id="temperature-unit"><option value="F">Fahrenheit</option><option value="C">Celsius</option></select></label>
-        <label>Refresh interval<input id="refresh-interval" type="number" min="60" step="30"><span>seconds</span></label>
+        <label>Refresh display every<select id="refresh-interval"><option value="60">1 minute</option><option value="300">5 minutes</option><option value="600">10 minutes</option><option value="900">15 minutes</option><option value="1200">20 minutes</option><option value="1800">30 minutes</option><option value="2700">45 minutes</option><option value="3600">60 minutes</option></select></label>
       </div>
       <fieldset><legend>Displayed screens</legend>
         <p class="field-help">Check one screen to keep it displayed. Check two or more to rotate through them in this exact order.</p>
         <div id="screen-order" class="screen-order"></div>
-        <label class="rotation-interval-label">Time on each screen<input id="rotation-interval" type="number" min="60" step="30"><span>seconds</span></label>
+        <label id="rotation-interval-label" class="rotation-interval-label">Time on each screen<select id="rotation-interval"><option value="60">1 minute</option><option value="300">5 minutes</option><option value="600">10 minutes</option><option value="900">15 minutes</option><option value="1200">20 minutes</option><option value="1800">30 minutes</option><option value="2700">45 minutes</option><option value="3600">60 minutes</option></select></label>
       </fieldset>
       <fieldset><legend>Warning thresholds</legend><div class="form-grid thresholds">
         <label>Storage<input id="storage-threshold" type="number" min="1" max="100"><span>%</span></label>

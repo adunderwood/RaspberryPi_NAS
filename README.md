@@ -166,6 +166,10 @@ the saved fixed or rotation preference. Drive status is Linux MD health data
 rather than SMART telemetry, so it requires no privileged
 raw-disk access.
 
+Display refresh and screen rotation are configured in minutes. CPU, RAM, and
+temperature history remains collected at full resolution in SQLite and is
+averaged into the selected display-refresh duration when charts are requested.
+
 The service listens on `0.0.0.0:5000`, so it can also be accessed through the Pi 5's normal LAN address when desired.
 
 To verify the service on the Pi 5:

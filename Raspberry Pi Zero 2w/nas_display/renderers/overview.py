@@ -28,7 +28,8 @@ class OverviewRenderer:
         if history:
             chart_x, chart_h = left + 31, 18
             chart_y, chart_w = safe_bottom - chart_h, safe_right - chart_x
-            draw.text((left, chart_y + 2), "CPU", font=small, fill=colors["foreground"])
+            minutes = max(1, round(float(snapshot.get("cpu", {}).get("history_bucket_seconds", 60)) / 60))
+            draw.text((left, chart_y + 2), f"CPU {minutes}m", font=small, fill=colors["foreground"])
             bar_w = max(1, chart_w // len(history))
             for index, point in enumerate(history):
                 value = max(0, min(100, float(point.get("value", 0))))

@@ -27,3 +27,14 @@ def test_legacy_display_defaults_are_migrated(tmp_path):
     assert migrated["thresholds"]["ambient_temperature_c"] == 37.8
     assert migrated["revision"] == legacy_revision + 1
     reopened.close()
+
+def test_bucketed_series_averages_raw_samples(tmp_path):
+    store = MetricStore(str(tmp_path / "metrics.sqlite3"))
+    try:
+        store.record("cpu.usage_percent", 10, "percent", "2026-01-01T00:00:01Z")
+        store.record("cpu.usage_percent", 30, "percent", "2026-01-01T00:00:30Z")
+        store.record("cpu.usage_percent", 50, "percent", "2026-01-01T00:01:01Z")
+        points = store.bucketed_series("cpu.usage_percent", 60, 18)
+        assert [point["value"] for point in points] == [20, 50]
+    finally:
+        store.close()

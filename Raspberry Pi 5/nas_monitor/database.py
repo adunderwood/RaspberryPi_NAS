@@ -67,6 +67,24 @@ class MetricStore:
                 (name, limit)).fetchall()
         return [dict(row) for row in reversed(rows)]
 
+    def bucketed_series(self, name: str, bucket_seconds: int, limit: int) -> list[dict[str, Any]]:
+        """Average raw samples into stable time buckets, retaining recent detail in SQLite."""
+        with self._lock:
+            latest = self._connection.execute(
+                "SELECT MAX(CAST(strftime('%s', collected_at) AS INTEGER)) AS epoch "
+                "FROM metric_samples WHERE name=?", (name,)).fetchone()["epoch"]
+            if latest is None:
+                return []
+            cutoff = latest - bucket_seconds * limit
+            rows = self._connection.execute("""
+                SELECT MAX(collected_at) AS collected_at, AVG(value) AS value, unit,
+                       CAST(strftime('%s', collected_at) AS INTEGER) / ? AS bucket
+                FROM metric_samples
+                WHERE name=? AND CAST(strftime('%s', collected_at) AS INTEGER) > ?
+                GROUP BY bucket, unit ORDER BY bucket DESC LIMIT ?
+                """, (bucket_seconds, name, cutoff, limit)).fetchall()
+        return [{key: row[key] for key in ("collected_at", "value", "unit")} for row in reversed(rows)]
+
     def latest(self, name: str) -> dict[str, Any] | None:
         values = self.series(name, 1)
         return values[0] if values else None
