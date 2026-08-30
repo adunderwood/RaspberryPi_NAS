@@ -87,14 +87,12 @@
       </fieldset>
       <div class="form-grid">
         <label>Temperature unit<select id="temperature-unit"><option value="F">Fahrenheit</option><option value="C">Celsius</option></select></label>
-        <label>Screen mode<select id="screen-mode"><option value="fixed">Fixed screen</option><option value="rotate">Rotate screens</option></select></label>
-        <label>Fixed screen<select id="fixed-screen"><option value="overview">Overview</option><option value="storage">Storage</option><option value="thermal">Thermal</option><option value="drive_health">Drive health</option><option value="cpu_memory">CPU &amp; RAM</option></select></label>
         <label>Refresh interval<input id="refresh-interval" type="number" min="60" step="30"><span>seconds</span></label>
-        <label>Rotation interval<input id="rotation-interval" type="number" min="60" step="30"><span>seconds</span></label>
       </div>
-      <fieldset><legend>Rotating screens</legend>
-        <p class="field-help">Select screens and drag them—or use the arrow buttons—to set their display order.</p>
+      <fieldset><legend>Displayed screens</legend>
+        <p class="field-help">Check one screen to keep it displayed. Check two or more to rotate through them in this exact order.</p>
         <div id="screen-order" class="screen-order"></div>
+        <label class="rotation-interval-label">Time on each screen<input id="rotation-interval" type="number" min="60" step="30"><span>seconds</span></label>
       </fieldset>
       <fieldset><legend>Warning thresholds</legend><div class="form-grid thresholds">
         <label>Storage<input id="storage-threshold" type="number" min="1" max="100"><span>%</span></label>

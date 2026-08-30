@@ -413,6 +413,8 @@ legend {
 .screen-order-item input { width: auto; margin: 0; accent-color: var(--accent); }
 .order-button { border: 0; background: transparent; color: var(--muted); cursor: pointer; padding: 4px 7px; font-size: 1rem; }
 .order-button:hover { color: var(--text); }
+.rotation-interval-label { display: block; position: relative; max-width: 260px; margin-top: 14px; }
+.rotation-interval-label > span { position: absolute; right: 13px; bottom: 11px; color: var(--muted); font-size: .8rem; }
 .theme-fieldset {
   margin-top: 18px;
 }

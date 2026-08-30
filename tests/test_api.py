@@ -36,6 +36,8 @@ def test_dashboard_and_assets_are_served(client):
     assert b"Display theme" in response.data
     assert b"Drive health" in response.data
     assert b"CPU &amp; RAM" in response.data
+    assert b"Check one screen to keep it displayed" in response.data
+    assert b"Check two or more to rotate" in response.data
     assert b'id="cpu-temp-unit"' in response.data
     assert b'id="ambient-temp-unit"' in response.data
     assert client.get("/static/dashboard.css").status_code == 200
