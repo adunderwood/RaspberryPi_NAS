@@ -16,8 +16,9 @@ def create_app(config: AppConfig, store: MetricStore, storage_provider: StorageP
 
     def build_snapshot() -> dict[str, Any]:
         cpu, cpu_temp = store.latest("cpu.usage_percent"), store.latest("cpu.temperature_c")
+        memory = store.latest("memory.usage_percent")
         ambient = store.latest("ambient.temperature_c")
-        stamps = [item["collected_at"] for item in (cpu, cpu_temp, ambient) if item]
+        stamps = [item["collected_at"] for item in (cpu, cpu_temp, memory, ambient) if item]
         return {
             "schema_version": 1, "collected_at": max(stamps) if stamps else None,
             "status": "ok" if cpu else "starting",
@@ -25,6 +26,8 @@ def create_app(config: AppConfig, store: MetricStore, storage_provider: StorageP
                     "temperature_c": cpu_temp["value"] if cpu_temp else None,
                     "usage_history": store.series("cpu.usage_percent", config.collection.history_points),
                     "temperature_history": store.series("cpu.temperature_c", config.collection.history_points)},
+            "memory": {"usage_percent": memory["value"] if memory else None,
+                       "usage_history": store.series("memory.usage_percent", config.collection.history_points)},
             "ambient": {"temperature_c": ambient["value"] if ambient else None},
             "storage": {"arrays": storage_provider()},
         }

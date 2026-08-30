@@ -9,9 +9,9 @@ def font(size: int, bold: bool = False):
     except OSError: return ImageFont.load_default()
 
 def theme(name: str):
-    if name == "dark": return {"background": BLACK, "foreground": WHITE, "accent": RED}
+    if name == "dark": return {"background": BLACK, "foreground": WHITE, "accent": WHITE}
     if name == "alert": return {"background": RED, "foreground": WHITE, "accent": WHITE}
-    return {"background": WHITE, "foreground": BLACK, "accent": RED}
+    return {"background": WHITE, "foreground": BLACK, "accent": BLACK}
 
 def temperature(value, unit: str) -> str:
     if value is None: return "--"

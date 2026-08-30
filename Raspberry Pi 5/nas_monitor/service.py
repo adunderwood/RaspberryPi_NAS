@@ -2,7 +2,7 @@
 import logging, signal, threading, time
 from waitress import serve
 from .application import create_app
-from .collectors import collect_ambient_temperature, collect_cpu_temperature, collect_cpu_usage, collect_storage, find_ambient_sensor
+from .collectors import collect_ambient_temperature, collect_cpu_temperature, collect_cpu_usage, collect_memory_usage, collect_storage, find_ambient_sensor
 from .config import AppConfig, load_config
 from .database import MetricStore
 
@@ -24,6 +24,7 @@ class CollectorService:
         collect_cpu_usage()
         jobs = [
             ("cpu.usage_percent", "percent", self.config.collection.cpu_interval_seconds, collect_cpu_usage),
+            ("memory.usage_percent", "percent", self.config.collection.cpu_interval_seconds, collect_memory_usage),
             ("cpu.temperature_c", "celsius", self.config.collection.temperature_interval_seconds,
              lambda: collect_cpu_temperature(self.config.sensors.cpu_temperature_path))]
         def ambient_temperature():

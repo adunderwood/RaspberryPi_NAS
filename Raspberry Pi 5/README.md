@@ -178,40 +178,32 @@ Response:
 
 ## Log Management
 
-### Log Files
+Current CPU, RAM, and temperature history is stored in
+`/var/lib/nas-monitor/metrics.sqlite3` and retained according to
+`retention_days` in `/etc/nas-monitor/config.toml`. Runtime diagnostics go to
+the systemd journal.
 
-The service maintains three log files:
-- `cpu_usage.log` - CPU percentage readings
-- `cpu_temp.log` - CPU temperature readings (°C)
-- `temperature.log` - Ambient temperature readings
-
-### Automatic Rotation
-
-Logs are automatically rotated to keep only the last `MAX_LOG_LINES` entries. This prevents unlimited growth.
-
-**Example size with default settings (2000 lines):**
-- CPU logs: ~20-30 KB each
-- Total: < 100 KB (vs 35+ MB in old system)
-
-### Manual Cleanup
+The former `cpu_usage.log`, `cpu_temp.log`, and `temperature.log` files are not
+read by `nas-monitor`. After confirming the legacy services are inactive, they
+can be deleted:
 
 ```bash
-# Clear all logs (service will recreate them)
+systemctl is-active cpu_logger cpu_temp_logger therm_logger
 rm ~/services/*.log
-
-# Restart service
-sudo systemctl restart nas_service
 ```
+
+Do not delete `metrics.sqlite3` unless intentionally purging metric history and
+display preferences.
 
 ## Monitoring
 
 ### View Logs
 ```bash
 # Follow service logs
-sudo journalctl -u nas_service -f
+sudo journalctl -u nas-monitor -f
 
 # View recent logs
-sudo journalctl -u nas_service -n 100
+sudo journalctl -u nas-monitor -n 100
 ```
 
 ### Check Service Status

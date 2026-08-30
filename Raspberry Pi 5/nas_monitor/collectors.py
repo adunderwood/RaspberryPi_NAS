@@ -1,6 +1,6 @@
 """Hardware metric collectors."""
 from __future__ import annotations
-import shutil
+import re, shutil
 from pathlib import Path
 from typing import Any
 import psutil
@@ -8,6 +8,9 @@ from .config import SensorConfig
 
 def collect_cpu_usage() -> float:
     return float(psutil.cpu_percent(interval=None))
+
+def collect_memory_usage() -> float:
+    return float(psutil.virtual_memory().percent)
 
 def collect_cpu_temperature(path: str) -> float:
     return int(Path(path).read_text(encoding="utf-8").strip()) / 1000.0
@@ -24,6 +27,23 @@ def collect_ambient_temperature(sensor_path: Path) -> float:
     if len(lines) < 2 or not lines[0].strip().endswith("YES") or "t=" not in lines[1]:
         raise ValueError("DS18B20 reading failed CRC validation")
     return int(lines[1].rsplit("t=", 1)[1]) / 1000.0
+
+def physical_drive_name(member_name: str) -> str:
+    if re.fullmatch(r"(?:nvme\d+n\d+|mmcblk\d+)p\d+", member_name):
+        return member_name.rsplit("p", 1)[0]
+    if re.fullmatch(r"(?:sd|hd|vd)[a-z]+\d+", member_name):
+        return re.sub(r"\d+$", "", member_name)
+    return member_name
+
+def collect_drive_temperature(device_name: str, sys_block_root: Path = Path("/sys/class/block")) -> float | None:
+    """Read an optional drivetemp/hwmon temperature without raw-disk privileges."""
+    candidates = sorted((sys_block_root / device_name / "device" / "hwmon").glob("hwmon*/temp1_input"))
+    for candidate in candidates:
+        try:
+            return round(int(candidate.read_text(encoding="utf-8").strip()) / 1000.0, 1)
+        except (OSError, ValueError):
+            continue
+    return None
 
 def collect_md_members(device: str, sys_block_root: Path = Path("/sys/class/block")) -> tuple[list[dict[str, Any]], int]:
     """Read Linux MD member state without requiring privileged SMART access."""
@@ -43,10 +63,14 @@ def collect_md_members(device: str, sys_block_root: Path = Path("/sys/class/bloc
             errors = int((member / "errors").read_text(encoding="utf-8").strip())
         except (OSError, ValueError):
             errors = 0
-        name = member.name.removeprefix("dev-").replace("!", "/")
-        healthy = state in {"active", "in_sync", "write_mostly"} and errors == 0
-        members.append({"device": f"/dev/{name}", "state": state, "errors": errors, "healthy": healthy})
-    return members, degraded
+        member_name = member.name.removeprefix("dev-").replace("!", "/")
+        name = physical_drive_name(member_name)
+        states = {value.strip() for value in state.split(",")}
+        healthy = bool(states & {"active", "in_sync", "write_mostly"}) and "faulty" not in states and errors == 0
+        members.append({"device": f"/dev/{name}", "member_device": f"/dev/{member_name}",
+                        "state": state, "errors": errors, "healthy": healthy,
+                        "temperature_c": collect_drive_temperature(name, sys_block_root)})
+    return sorted(members, key=lambda item: item["device"]), degraded
 
 def collect_storage() -> list[dict[str, Any]]:
     arrays = []

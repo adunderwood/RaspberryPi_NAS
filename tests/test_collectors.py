@@ -1,5 +1,5 @@
 from collections import namedtuple
-from nas_monitor.collectors import collect_ambient_temperature, collect_md_members, collect_storage, find_ambient_sensor
+from nas_monitor.collectors import collect_ambient_temperature, collect_drive_temperature, collect_md_members, collect_storage, find_ambient_sensor, physical_drive_name
 from nas_monitor.config import SensorConfig
 
 def test_finds_and_reads_ds18b20_sensor(tmp_path):
@@ -51,4 +51,12 @@ def test_collects_linux_md_member_health(tmp_path):
     drives, degraded = collect_md_members("/dev/md0", tmp_path)
 
     assert degraded == 0
-    assert drives == [{"device":"/dev/sda", "state":"in_sync", "errors":0, "healthy":True}]
+    assert drives == [{"device":"/dev/sda", "member_device":"/dev/sda", "state":"in_sync",
+                       "errors":0, "healthy":True, "temperature_c":None}]
+
+def test_collects_optional_physical_drive_temperature(tmp_path):
+    reading = tmp_path / "sda" / "device" / "hwmon" / "hwmon0" / "temp1_input"
+    reading.parent.mkdir(parents=True); reading.write_text("41250\n")
+    assert physical_drive_name("sda1") == "sda"
+    assert physical_drive_name("nvme0n1p2") == "nvme0n1"
+    assert collect_drive_temperature("sda", tmp_path) == 41.2

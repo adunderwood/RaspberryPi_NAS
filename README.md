@@ -35,8 +35,8 @@ internet access.
 ### Monitoring Service (Pi 5)
 
 - **Unified REST API** - Single service with multiple endpoints
-- **Real-time Metrics** - CPU usage, CPU temperature, ambient temperature, RAID status
-- **Automatic Log Rotation** - Maintains the last 2000 readings and prevents unbounded log growth
+- **Real-time Metrics** - CPU and RAM usage, CPU and ambient temperature, optional drive temperature, and RAID status
+- **SQLite History** - Retains recent metric history without legacy flat log files
 - **Robust Error Handling** - Gracefully handles sensor failures and corrupted data
 - **Persistent Storage** - Survives reboots while keeping disk usage minimal
 - **Live Web Dashboard** - Responsive current metrics and CPU history at port `5000`
@@ -44,7 +44,7 @@ internet access.
 
 ### Display (Pi Zero 2W)
 
-- **E-Ink Dashboard** - Shows disk usage, temperatures, and CPU activity sparkline
+- **E-Ink Dashboard** - Shows disk usage, temperatures, CPU/RAM activity, and four-column drive health
 - **Visual Warnings** - Uses red when thresholds are exceeded
 - **Managed Refreshes** - The display agent refreshes on its configured policy and suppresses redundant panel updates
 - **Configurable Themes** - User-selectable light and dark color schemes

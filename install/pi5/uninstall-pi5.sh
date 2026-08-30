@@ -15,6 +15,7 @@ fi
 
 systemctl disable --now nas-monitor.service 2>/dev/null || true
 rm -f /etc/systemd/system/nas-monitor.service
+rm -f /etc/modules-load.d/nas-monitor-drivetemp.conf
 systemctl daemon-reload
 
 if [ "$purge" = true ]; then

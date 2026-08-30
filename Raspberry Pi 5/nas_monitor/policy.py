@@ -2,7 +2,7 @@
 from typing import Any
 from .database import DEFAULT_POLICY
 
-SCREEN_TYPES = {"overview", "storage", "thermal", "drive_health"}
+SCREEN_TYPES = {"overview", "storage", "thermal", "drive_health", "cpu_memory"}
 
 def validate_policy(candidate: Any) -> dict[str, Any]:
     if not isinstance(candidate, dict):

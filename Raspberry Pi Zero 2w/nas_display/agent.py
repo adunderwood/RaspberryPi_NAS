@@ -35,6 +35,7 @@ def is_alert(snapshot: dict[str, Any], policy: dict[str, Any]) -> bool:
     arrays = snapshot.get("storage", {}).get("arrays", [])
     storage_alert = any(float(item.get("usage_percent", 0)) >= float(thresholds.get("storage_percent", 90)) for item in arrays)
     drive_alert = any(int(item.get("degraded_drives", 0) or 0) > 0 or
+                      (bool(item.get("drives")) and len(item.get("drives", [])) < 4) or
                       any(not drive.get("healthy", False) for drive in item.get("drives", []))
                       for item in arrays)
     cpu_temp = snapshot.get("cpu", {}).get("temperature_c")

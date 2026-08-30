@@ -8,6 +8,7 @@ def client(tmp_path):
     store = MetricStore(str(tmp_path / "metrics.sqlite3"))
     store.record("cpu.usage_percent", 25, "percent", "2026-01-01T00:00:00Z")
     store.record("cpu.temperature_c", 50, "celsius", "2026-01-01T00:00:01Z")
+    store.record("memory.usage_percent", 62.5, "percent", "2026-01-01T00:00:01Z")
     store.record("ambient.temperature_c", 20, "celsius", "2026-01-01T00:00:02Z")
     array = {"device":"/dev/md0", "mount":"/mnt/nas", "bytes_total":10737418240,
              "bytes_used":5368709120, "bytes_free":5368709120, "usage_percent":50.0,
@@ -24,6 +25,7 @@ def test_versioned_snapshot_is_typed(client):
     response = client.get("/api/v1/snapshot")
     assert response.status_code == 200
     assert response.json["cpu"]["usage_percent"] == 25
+    assert response.json["memory"]["usage_percent"] == 62.5
     assert response.json["storage"]["arrays"][0]["bytes_total"] == 10737418240
 
 def test_dashboard_and_assets_are_served(client):
@@ -33,6 +35,7 @@ def test_dashboard_and_assets_are_served(client):
     assert b"Approximate eInk display preview" in response.data
     assert b"Display theme" in response.data
     assert b"Drive health" in response.data
+    assert b"CPU &amp; RAM" in response.data
     assert b'id="cpu-temp-unit"' in response.data
     assert b'id="ambient-temp-unit"' in response.data
     assert client.get("/static/dashboard.css").status_code == 200
@@ -54,7 +57,7 @@ def test_policy_validation_and_revision(client):
     policy = client.get("/api/v1/display/policy").json
     revision = policy["revision"]
     policy["theme"] = "dark"
-    policy["fixed_screen"] = "drive_health"
+    policy["fixed_screen"] = "cpu_memory"
     response = client.put("/api/v1/display/policy", json=policy)
     assert response.status_code == 200
     assert response.json["revision"] == revision + 1

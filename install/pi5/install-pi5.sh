@@ -21,6 +21,11 @@ fi
 install -d -m 0755 /opt/nas-monitor /etc/nas-monitor
 install -d -o nas-monitor -g nas-monitor -m 0750 /var/lib/nas-monitor
 
+# Linux's drivetemp hwmon interface provides optional, unprivileged SATA drive
+# temperatures. Unsupported controllers simply expose no temperature file.
+printf 'drivetemp\n' > /etc/modules-load.d/nas-monitor-drivetemp.conf
+modprobe drivetemp 2>/dev/null || true
+
 # Replace application-owned files while preserving the virtual environment and state elsewhere.
 find /opt/nas-monitor -mindepth 1 -maxdepth 1 ! -name .venv -exec rm -rf -- {} +
 cp -a "$app_source/nas_monitor" /opt/nas-monitor/
