@@ -7,7 +7,7 @@ SCREEN_TYPES = {"overview", "storage", "thermal", "drive_health", "cpu_memory"}
 def validate_policy(candidate: Any) -> dict[str, Any]:
     if not isinstance(candidate, dict):
         raise ValueError("policy must be a JSON object")
-    unknown = set(candidate) - set(DEFAULT_POLICY) - {"revision", "updated_at"}
+    unknown = set(candidate) - set(DEFAULT_POLICY) - {"revision", "updated_at", "display_override"}
     if unknown:
         raise ValueError(f"unknown policy keys: {', '.join(sorted(unknown))}")
     policy = dict(DEFAULT_POLICY)
@@ -21,6 +21,11 @@ def validate_policy(candidate: Any) -> dict[str, Any]:
         raise ValueError("each screen requires a string type")
     invalid_screens = {screen["type"] for screen in policy["screens"]} - SCREEN_TYPES
     if invalid_screens: raise ValueError(f"unsupported screens: {', '.join(sorted(invalid_screens))}")
+    override = candidate.get("display_override")
+    if override is not None:
+        if not isinstance(override, dict) or override.get("type") not in SCREEN_TYPES:
+            raise ValueError("invalid display_override")
+        policy["display_override"] = override
     for key in ("rotation_interval_seconds", "refresh_interval_seconds"):
         if not isinstance(policy[key], int) or policy[key] < 60:
             raise ValueError(f"{key} must be at least 60 seconds")

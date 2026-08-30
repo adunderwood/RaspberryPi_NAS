@@ -7,7 +7,7 @@ from typing import Any, Callable
 from flask import Flask, Response, jsonify, render_template, request, stream_with_context
 from .config import AppConfig
 from .database import MetricStore
-from .policy import validate_policy
+from .policy import SCREEN_TYPES, validate_policy
 
 StorageProvider = Callable[[], list[dict[str, Any]]]
 
@@ -39,7 +39,8 @@ def create_app(config: AppConfig, store: MetricStore, storage_provider: StorageP
     def api_index():
         return jsonify({"service": "NAS Monitoring Service", "schema_version": 1,
                         "endpoints": ["/api/v1/health", "/api/v1/snapshot",
-                                      "/api/v1/events", "/api/v1/display/policy"]})
+                                      "/api/v1/events", "/api/v1/display/policy",
+                                      "/api/v1/display/show"]})
 
     @app.get("/api/v1/health")
     def health():
@@ -70,6 +71,18 @@ def create_app(config: AppConfig, store: MetricStore, storage_provider: StorageP
         except (ValueError, TypeError) as error:
             return jsonify({"error": str(error)}), 400
         return jsonify(store.set_policy(policy))
+
+    @app.post("/api/v1/display/show")
+    def show_display():
+        body = request.get_json(silent=True) or {}
+        screen, theme, unit = body.get("screen"), body.get("theme"), body.get("temperature_unit")
+        if screen not in SCREEN_TYPES:
+            return jsonify({"error": "invalid screen"}), 400
+        if theme not in {"light", "dark"}:
+            return jsonify({"error": "invalid theme"}), 400
+        if unit not in {"C", "F"}:
+            return jsonify({"error": "temperature_unit must be C or F"}), 400
+        return jsonify(store.request_display(screen, theme, unit))
 
     @app.get("/cpu")
     def legacy_cpu():

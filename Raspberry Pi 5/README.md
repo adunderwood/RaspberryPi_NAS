@@ -12,7 +12,9 @@ The dashboard displays live CPU, thermal, and storage metrics. Its Display
 Settings panel manages the policy consumed by the Pi Zero 2W, including theme,
 temperature unit, fixed or rotating screens, refresh timing, and alert
 thresholds. Available screens include overview, storage, thermal, and individual
-Linux MD member-drive health. Live updates use `/api/v1/events`; no frontend
+Linux MD member-drive health. The dashboard polls the snapshot endpoint for live
+updates so it does not occupy the service's worker pool; `/api/v1/events` remains
+available to API clients. No frontend
 build step is needed.
 
 ## Features

@@ -67,3 +67,12 @@ def test_policy_validation_and_revision(client):
     policy["theme"] = "dark"
     policy["screens"] = [{"type":"not-installed"}]
     assert client.put("/api/v1/display/policy", json=policy).status_code == 400
+
+def test_show_display_creates_temporary_override(client):
+    response = client.post("/api/v1/display/show", json={
+        "screen": "drive_health", "theme": "dark", "temperature_unit": "F"})
+    assert response.status_code == 200
+    assert response.json["display_override"]["type"] == "drive_health"
+    assert response.json["display_override"]["theme"] == "dark"
+    assert client.post("/api/v1/display/show", json={
+        "screen": "invalid", "theme": "dark", "temperature_unit": "F"}).status_code == 400

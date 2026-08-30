@@ -77,7 +77,7 @@
           <label>Preview screen<select id="preview-screen"><option value="overview">Overview</option><option value="storage">Storage</option><option value="thermal">Thermal</option><option value="drive_health">Drive health</option><option value="cpu_memory">CPU &amp; RAM</option></select></label>
         </div>
         <div class="inky-preview"><canvas id="display-preview" width="500" height="244" role="img" aria-label="Approximate eInk display preview"></canvas></div>
-        <p class="preview-note">Approximate layout and three-colour rendering. Exact fonts and spacing depend on the detected panel.</p>
+        <div class="preview-footer"><p class="preview-note">Approximate layout and three-colour rendering. Exact fonts and spacing depend on the detected panel.</p><button id="show-preview" class="button button-secondary" type="button">Show on display now</button></div>
       </section>
       <fieldset class="theme-fieldset"><legend>Display theme</legend>
         <div class="theme-options">
@@ -93,11 +93,8 @@
         <label>Rotation interval<input id="rotation-interval" type="number" min="60" step="30"><span>seconds</span></label>
       </div>
       <fieldset><legend>Rotating screens</legend>
-        <label class="check"><input type="checkbox" name="screen" value="overview">Overview</label>
-        <label class="check"><input type="checkbox" name="screen" value="storage">Storage</label>
-        <label class="check"><input type="checkbox" name="screen" value="thermal">Thermal</label>
-        <label class="check"><input type="checkbox" name="screen" value="drive_health">Drive health</label>
-        <label class="check"><input type="checkbox" name="screen" value="cpu_memory">CPU &amp; RAM</label>
+        <p class="field-help">Select screens and drag them—or use the arrow buttons—to set their display order.</p>
+        <div id="screen-order" class="screen-order"></div>
       </fieldset>
       <fieldset><legend>Warning thresholds</legend><div class="form-grid thresholds">
         <label>Storage<input id="storage-threshold" type="number" min="1" max="100"><span>%</span></label>

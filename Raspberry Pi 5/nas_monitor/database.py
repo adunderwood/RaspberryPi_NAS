@@ -87,6 +87,19 @@ class MetricStore:
                 (json.dumps(clean), self.now()))
         return self.get_policy()
 
+    def request_display(self, screen: str, theme: str, temperature_unit: str) -> dict[str, Any]:
+        """Request a temporary screen without changing fixed/rotation preferences."""
+        policy = self.get_policy()
+        hold_seconds = max(60, int(policy.get("rotation_interval_seconds", 300)))
+        expires_at = datetime.now(timezone.utc) + timedelta(seconds=hold_seconds)
+        policy["display_override"] = {
+            "type": screen,
+            "theme": theme,
+            "temperature_unit": temperature_unit,
+            "expires_at": expires_at.isoformat().replace("+00:00", "Z"),
+        }
+        return self.set_policy(policy)
+
     def prune(self) -> int:
         cutoff = (datetime.now(timezone.utc) - timedelta(days=self.retention_days)).isoformat().replace("+00:00", "Z")
         with self._lock, self._connection:

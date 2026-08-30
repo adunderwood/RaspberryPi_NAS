@@ -153,14 +153,17 @@ The versioned API and dashboard also provide:
 |------|-------------|
 | `/` | Live management dashboard |
 | `/api/v1/snapshot` | Typed current metrics and recent history |
-| `/api/v1/events` | Server-Sent Events stream for live dashboard updates |
+| `/api/v1/events` | Optional Server-Sent Events stream for API clients |
 | `/api/v1/display/policy` | Persistent eInk display preferences |
+| `/api/v1/display/show` | Temporarily show a selected preview on the eInk display |
 | `/api/v1/health` | Service health check |
 
 For Linux MD arrays, each snapshot also reports the member devices, their MD
 state and error count, and whether the array is degraded. The Drive Health eInk
-screen can be selected as a fixed screen or included in the rotation. This is
-Linux MD health data rather than SMART telemetry, so it requires no privileged
+screen can be selected as a fixed screen or included in an ordered rotation. The
+dashboard can also send any preview to the display immediately without changing
+the saved fixed or rotation preference. Drive status is Linux MD health data
+rather than SMART telemetry, so it requires no privileged
 raw-disk access.
 
 The service listens on `0.0.0.0:5000`, so it can also be accessed through the Pi 5's normal LAN address when desired.

@@ -35,9 +35,23 @@ def test_hash_changes_with_pixels():
 
 def test_rotation_is_deterministic():
     policy = {"mode":"rotate", "rotation_interval_seconds":60,
+              "updated_at":"1970-01-01T00:00:00Z",
               "screens":[{"type":"overview"},{"type":"thermal"}]}
     assert selected_screen(policy, 0)["type"] == "overview"
     assert selected_screen(policy, 60)["type"] == "thermal"
+
+def test_rotation_starts_from_first_screen_when_policy_changes():
+    policy = {"mode":"rotate", "rotation_interval_seconds":60,
+              "updated_at":"1970-01-01T00:16:40Z",
+              "screens":[{"type":"overview"},{"type":"thermal"}]}
+    assert selected_screen(policy, 1000)["type"] == "overview"
+    assert selected_screen(policy, 1060)["type"] == "thermal"
+
+def test_temporary_display_override_wins_until_expiry():
+    policy = {"mode":"fixed", "fixed_screen":"overview", "display_override":{
+        "type":"drive_health", "expires_at":"1970-01-01T00:18:20Z"}}
+    assert selected_screen(policy, 1000)["type"] == "drive_health"
+    assert selected_screen(policy, 1200)["type"] == "overview"
 
 def test_degraded_drive_triggers_alert_refresh():
     snapshot = {**SNAPSHOT, "storage":{"arrays":[{

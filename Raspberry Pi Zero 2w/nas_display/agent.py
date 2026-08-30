@@ -1,6 +1,7 @@
 """Long-running display agent with cached offline behavior."""
 from __future__ import annotations
 import hashlib, logging, signal, time
+from datetime import datetime
 from typing import Any
 from .client import ApiError, NasClient
 from .config import load_config
@@ -25,10 +26,19 @@ def image_hash(image) -> str:
     return digest.hexdigest()
 
 def selected_screen(policy: dict[str, Any], now: float) -> dict[str, Any]:
+    override = policy.get("display_override")
+    if isinstance(override, dict):
+        try:
+            expires = datetime.fromisoformat(override["expires_at"].replace("Z", "+00:00")).timestamp()
+            if now < expires: return {"type": override.get("type", "overview"), "override": True}
+        except (KeyError, TypeError, ValueError):
+            pass
     if policy.get("mode") == "fixed": return {"type": policy.get("fixed_screen", "overview")}
     screens = policy.get("screens") or [{"type": "overview"}]
     interval = max(60, int(policy.get("rotation_interval_seconds", 300)))
-    return screens[int(now // interval) % len(screens)]
+    try: anchor = datetime.fromisoformat(policy["updated_at"].replace("Z", "+00:00")).timestamp()
+    except (KeyError, TypeError, ValueError): anchor = 0
+    return screens[int(max(0, now - anchor) // interval) % len(screens)]
 
 def is_alert(snapshot: dict[str, Any], policy: dict[str, Any]) -> bool:
     thresholds = policy.get("thresholds", {})
@@ -93,7 +103,12 @@ class DisplayAgent:
         screen = selected_screen(policy, now)
         self.state.cache_success(snapshot, policy, now)
         renderer = get_renderer(screen.get("type", "overview"))
-        image = renderer.render(snapshot, policy, self.hardware.size)
+        render_policy = policy
+        override = policy.get("display_override")
+        if screen.get("override") and isinstance(override, dict):
+            render_policy = {**policy, "theme": override.get("theme", policy.get("theme")),
+                             "temperature_unit": override.get("temperature_unit", policy.get("temperature_unit"))}
+        image = renderer.render(snapshot, render_policy, self.hardware.size)
         last_show = float(self.state.data.get("last_show", 0))
         due = now - last_show >= float(policy.get("refresh_interval_seconds", 300))
         urgent = (not was_online or old_revision != policy.get("revision") or old_screen != screen or
