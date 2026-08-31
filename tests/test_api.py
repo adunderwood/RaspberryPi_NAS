@@ -42,8 +42,17 @@ def test_dashboard_and_assets_are_served(client):
     assert b">45 minutes<" in response.data
     assert b'id="cpu-temp-unit"' in response.data
     assert b'id="ambient-temp-unit"' in response.data
+    assert b'favicon/site.webmanifest' in response.data
+    assert b'favicon/favicon.svg' in response.data
     assert client.get("/static/dashboard.css").status_code == 200
     assert client.get("/static/dashboard.js").status_code == 200
+    assert client.get("/favicon.ico").status_code == 200
+    manifest = client.get("/static/favicon/site.webmanifest")
+    assert manifest.status_code == 200
+    assert manifest.json["icons"][0]["src"] == "web-app-manifest-192x192.png"
+    for asset in ("favicon.svg", "favicon-96x96.png", "apple-touch-icon.png",
+                  "web-app-manifest-192x192.png", "web-app-manifest-512x512.png"):
+        assert client.get(f"/static/favicon/{asset}").status_code == 200
 
 def test_event_stream_emits_typed_snapshot(client):
     response = client.get("/api/v1/events", buffered=False)

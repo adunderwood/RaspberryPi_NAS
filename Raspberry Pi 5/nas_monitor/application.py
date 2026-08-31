@@ -40,6 +40,9 @@ def create_app(config: AppConfig, store: MetricStore, storage_provider: StorageP
     @app.get("/")
     def index(): return render_template("dashboard.html")
 
+    @app.get("/favicon.ico")
+    def favicon(): return app.send_static_file("favicon/favicon.ico")
+
     @app.get("/api/v1")
     def api_index():
         return jsonify({"service": "NAS Monitoring Service", "schema_version": 1,
